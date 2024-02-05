@@ -9,25 +9,15 @@ Last Revised:...
 
 # General Libraries
 import os
-import re
 import glob
-import math
-import shutil
-import numpy as np
 import pandas as pd
-from random import randint
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-from datetime import time, datetime, date
-
-# DICOM Libraries
-import pydicom as pdcm
-from pydicom.tag import Tag
 
 # Custom Modules
-import DataCollectionConfig
-from ImageFeatureExtractor import ImageFeatureExtractor
+import DataCollectionConfig as dcc
 from ReaderWriter import Writer
+from DataframeProcessor import DataframeProcessor
+from ImageFeatureExtractor import ImageFeatureExtractor
+
 
 class Navigator():
     """
@@ -35,55 +25,63 @@ class Navigator():
     """
 
     def __init__(self):
-        self.navigation_paths = DataCollectionConfig.navigation_paths
-        self.output_path = DataCollectionConfig.output_path
-        self.exclusion_set = DataCollectionConfig.exclusion_set
-        self.navigation_file_name = DataCollectionConfig.navigation_file_name
-        self.min_slice_num = DataCollectionConfig.min_slice_num
-        self.modality = DataCollectionConfig.modality
-    
+        self.navigation_paths = dcc.navigation_paths
+        self.time_limit = dcc.time_limit
+        self.output_path = dcc.output_path
+        self.exclusion_set = dcc.exclusion_set
+        self.navigation_file_name = dcc.navigation_file_name
+        self.min_slice_num = dcc.min_slice_num
+        self.modality = dcc.modality
+
+    def _extract_image_information(self, subfolders):
+        group = list()
+        for subf in subfolders:
+            # number of slices (images) in each DICOM folder, and the name of the folders
+            slice_num = len(glob.glob(subf+"/*.DCM"))
+
+            # find whether subf is a path and the number of .DCM images is more than 50
+            if slice_num > self.min_slice_num:
+
+                # Extract the information of the image 
+                feature_extractor_obj = ImageFeatureExtractor(subf)
+                folder_name = feature_extractor_obj.get_folder_name()
+                
+                # Extract the images' information
+                if feature_extractor_obj.image.Modality == self.modality and \
+                    all(keyword not in folder_name.lower() for keyword in self.exclusion_set):
+
+                    # Add the information of this group to the total dataset
+                    group.append(feature_extractor_obj.get_image_information())
+        return group
+
     def navigate_folder(self, path_folder):
 
         # Make a group to save all the information
         group = list()
 
-        for r, d, f in os.walk(path_folder):
-            # make a list from all the directories 
-            subfolders = [os.path.join(r, folder) for folder in d]
-
-            for subf in subfolders:
-                # number of slices (images) in each DICOM folder, and the name of the folders
-                slice_num = len(glob.glob(subf+"/*.DCM"))
-
-                # find whether subf is a path and the number of .DCM images is more than 50
-                if slice_num > self.min_slice_num:
-
-                    # Extract the information of the image 
-                    feature_extractor_obj = ImageFeatureExtractor(subf)
-                    folder_name = feature_extractor_obj.get_folder_name()
-                    
-                    # Extract the images
-                    if feature_extractor_obj.image.Modality == self.modality and \
-                        all(keyword not in folder_name.lower() for keyword in self.exclusion_set):
-
-                        # Add the information of this group to the total dataset
-                        group.append(feature_extractor_obj.get_image_information())
+        try:
+            for r, d, f in os.walk(path_folder):
+                # make a list from all the directories 
+                subfolders = [os.path.join(r, folder) for folder in d]
+                group.extend(self._extract_image_information(subfolders))
         
-        # Make a datafrme from the main folder
-        df = pd.DataFrame(group)
+        except FileNotFoundError as e:
+            print(f'Error while navigating folders in path {path_folder}: {e}')
 
-        # # Save the dataframe ###### ADD THIS PART TO READ AND WRITE ########
-        # df.to_excel(os.path.join(self.output_path, self.navigation_file_name), index=False)
-
-        return df
+        return group
 
     def navigate_folders(self):
     
         writer_obj = Writer()
+        df_processor_obj = DataframeProcessor()
 
         for path_folder in self.navigation_paths:
+
+            # Find all the desired images in different folders
             try:
-                folder_dataframe = self.navigate_folder()
+                folder_list = self.navigate_folder(path_folder)
+                folder_dataframe = df_processor_obj.make_daaframe(folder_list)
+                folder_dataframe = df_processor_obj.clean_dataframe(folder_dataframe)
                 writer_obj.write_dataframe(path_folder, folder_dataframe, self.output_path)
             
             except Exception as e:

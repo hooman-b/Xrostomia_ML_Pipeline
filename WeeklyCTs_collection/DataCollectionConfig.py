@@ -12,6 +12,7 @@ import os
 import sys
 import math
 import torch
+import pandas as pd
 from datetime import datetime
 from itertools import chain, combinations
 
@@ -25,5 +26,6 @@ output_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART_DATA
 # Navigation Phase
 exclusion_set = {'detail', 'ac_ct', 'ld_ct', 'ld ct', 'ac ct'}  # images wanted to be excluded
 navigation_file_name = 'General_information_{}.xlsx'  # The name of the excel file. it should contain
+time_limit = pd.Timestamp('2014-01-01') # the threshold time (all the images before this time will be removed)
 min_slice_num = 50 # Minum number of slides per folder
 modality = 'CT' # Desired modality
