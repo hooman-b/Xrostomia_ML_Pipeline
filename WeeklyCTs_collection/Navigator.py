@@ -27,7 +27,7 @@ from pydicom.tag import Tag
 # Custom Modules
 import DataCollectionConfig
 from ImageFeatureExtractor import ImageFeatureExtractor
-
+from ReaderWriter import Writer
 
 class Navigator():
     """
@@ -77,8 +77,22 @@ class Navigator():
 
         return df
 
-    def main(self):
+    def navigate_folders(self):
+    
+        writer = Writer()
 
         for path_folder in self.navigation_paths:
+            try:
+                folder_dataframe = self.navigate_folder()
+                writer.write_dataframe(path_folder, folder_dataframe, self.output_path)
+            
+            except Exception as e:
+                print(f'Warning: path {path_folder} shows the following error: {e}')
+                pass
+            
+
+
+
+
 
 
