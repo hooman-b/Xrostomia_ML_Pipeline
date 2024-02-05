@@ -24,6 +24,6 @@ output_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART_DATA
 
 # Navigation Phase
 exclusion_set = {'detail', 'ac_ct', 'ld_ct', 'ld ct', 'ac ct'}  # images wanted to be excluded
-navi_file_name = 'General_information_{}.xlsx'  # The name of the excel file. it should contain
+navigation_file_name = 'General_information_{}.xlsx'  # The name of the excel file. it should contain
 min_slice_num = 50 # Minum number of slides per folder
 modality = 'CT' # Desired modality
