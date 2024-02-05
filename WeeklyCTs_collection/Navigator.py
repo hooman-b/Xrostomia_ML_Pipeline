@@ -79,19 +79,27 @@ class Navigator():
 
     def navigate_folders(self):
     
-        writer = Writer()
+        writer_obj = Writer()
 
         for path_folder in self.navigation_paths:
             try:
                 folder_dataframe = self.navigate_folder()
-                writer.write_dataframe(path_folder, folder_dataframe, self.output_path)
+                writer_obj.write_dataframe(path_folder, folder_dataframe, self.output_path)
             
             except Exception as e:
                 print(f'Warning: path {path_folder} shows the following error: {e}')
                 pass
             
 
+def main():
+    """
+    If somebody wants to navigate some folders without going further, they can use this function.
+    """
+    navigator_obj = Navigator()
+    navigator_obj.navigate_folders()
 
+if __name__ == "__main__":
+    main()
 
 
 
