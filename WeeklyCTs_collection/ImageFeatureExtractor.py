@@ -9,27 +9,42 @@ Last Revised:...
 # Import Libraries
 # General Libraries
 import re
+import glob
 from datetime import datetime
 
 # DICOM Libraries
+import pydicom as pdcm
 from pydicom.tag import Tag
 
 
 class ImageFeatureExtractor():
 
-    def __init__(self, image):
-        self.image = image
+    def __init__(self, subf):
+        self.subf = subf
+        self.image = self.make_image(subf)
     
-    def get_folder_name(self, subf):
+    def make_image(self, subf):
+
+        try:
+            # Make the image
+            image = pdcm.dcmread(glob.glob(subf+"/*.DCM")[0],force=True)
+        
+        except:
+            print(f'Warning: There is no image in {subf}')
+        
+        return image
+
+    def get_folder_name(self):
 
         # find the name of the folder
         try:
             folder_name = self.image[Tag(0x0008103e)].value
 
+        # Make the folder name based on the name of the folder
         except:
             study = self.get_study_inf(self)
             patient_id = self.get_patient_id(self)
-            folder_name = subf.split('\\')[-1]  
+            folder_name = self.subf.split('\\')[-1]  
             print(f'Warning: folder {study} with {patient_id} ID does NOT have Series Description')
     
         return folder_name
@@ -168,3 +183,40 @@ class ImageFeatureExtractor():
             pass
         
         return fraction
+    
+    def get_image_information(self):
+        """
+        This function extract the information of an image in the form of a dictionary
+        """
+        folder_name = self.get_folder_name()
+        patient_id = self.get_patient_id()
+        slice_num = len(glob.glob(self.subf+"/*.DCM"))
+
+        # split the name of the folder into strings of information
+        names_list = folder_name.split()
+
+        # Initialize the following three patameters
+        saver = None
+        hd_fov = 0
+        fraction = None
+
+        for number, name in enumerate(names_list):
+            saver = self.get_probable_weklyct_name(name, number, names_list, saver) 
+            hd_fov = self.get_hd_fov(name, hd_fov)
+            fraction = self.get_fraction(name, fraction)
+
+        # Find different information
+        date_info, weekday, week_num = self.get_date_information()
+        slice_thickness = self.get_slice_thickness()
+        contrast = self.get_contrast()
+        pixel_spacing = self.get_pixel_spacing()
+        uid = self.get_ref_uid()
+
+        # return the information of this image
+        return  {
+                'ID': patient_id, 'folder_name': folder_name, 'date': date_info,
+                'week_day': weekday, 'week_num': week_num, 'info_header': saver,
+                'fraction': fraction, 'HD_FoV': hd_fov, 'slice_thickness': slice_thickness,
+                'num_slices': slice_num, 'pixel_spacing': pixel_spacing, 'contrast': contrast,
+                'UID': uid, 'path': self.subf
+                }

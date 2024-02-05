@@ -35,4 +35,50 @@ class Navigator():
     """
 
     def __init__(self):
+        self.navigation_paths = DataCollectionConfig.navigation_paths
+        self.output_path = DataCollectionConfig.output_path
+        self.exclusion_set = DataCollectionConfig.exclusion_set
+        self.navigation_file_name = DataCollectionConfig.navigation_file_name
+        self.min_slice_num = DataCollectionConfig.min_slice_num
+        self.modality = DataCollectionConfig.modality
+    
+    def navigate_folder(self, path_folder):
+
+        # Make a group to save all the information
+        group = list()
+
+        for r, d, f in os.walk(path_folder):
+            # make a list from all the directories 
+            subfolders = [os.path.join(r, folder) for folder in d]
+
+            for subf in subfolders:
+                # number of slices (images) in each DICOM folder, and the name of the folders
+                slice_num = len(glob.glob(subf+"/*.DCM"))
+
+                # find whether subf is a path and the number of .DCM images is more than 50
+                if slice_num > self.min_slice_num:
+
+                    # Extract the information of the image 
+                    feature_extractor_obj = ImageFeatureExtractor(subf)
+                    folder_name = feature_extractor_obj.get_folder_name()
+                    
+                    # Extract the images
+                    if feature_extractor_obj.image.Modality == self.modality and \
+                        all(keyword not in folder_name.lower() for keyword in self.exclusion_set):
+
+                        # Add the information of this group to the total dataset
+                        group.append(feature_extractor_obj.get_image_information())
+        
+        # Make a datafrme from the main folder
+        df = pd.DataFrame(group)
+
+        # # Save the dataframe ###### ADD THIS PART TO READ AND WRITE ########
+        # df.to_excel(os.path.join(self.output_path, self.navigation_file_name), index=False)
+
+        return df
+
+    def main(self):
+
+        for path_folder in self.navigation_paths:
+
 
