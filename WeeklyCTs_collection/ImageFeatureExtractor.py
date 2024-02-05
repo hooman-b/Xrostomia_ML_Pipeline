@@ -15,7 +15,7 @@ from datetime import datetime
 from pydicom.tag import Tag
 
 
-class ImageFeatureExtractor:
+class ImageFeatureExtractor():
 
     def __init__(self, image):
         self.image = image
