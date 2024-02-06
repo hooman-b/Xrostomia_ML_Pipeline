@@ -27,11 +27,12 @@ class Navigator():
     def __init__(self):
         self.navigation_paths = dcc.navigation_paths
         self.time_limit = dcc.time_limit
-        self.output_path = dcc.output_path
+        self.general_df_path = dcc.general_df_path
         self.exclusion_set = dcc.exclusion_set
         self.navigation_file_name = dcc.navigation_file_name
         self.min_slice_num = dcc.min_slice_num
         self.modality = dcc.modality
+        self.general_writer_type = dcc.general_writer_type
 
     def _extract_image_information(self, subfolders):
         group = list()
@@ -72,7 +73,7 @@ class Navigator():
 
     def navigate_folders(self):
     
-        writer_obj = Writer()
+        writer_obj = Writer(self.general_writer_type)
         df_processor_obj = DataframeProcessor()
 
         for path_folder in self.navigation_paths:
@@ -80,9 +81,9 @@ class Navigator():
             # Find all the desired images in different folders
             try:
                 folder_list = self.navigate_folder(path_folder)
-                folder_dataframe = df_processor_obj.make_daaframe(folder_list)
+                folder_dataframe = df_processor_obj.make_dataframe(folder_list)
                 folder_dataframe = df_processor_obj.clean_dataframe(folder_dataframe)
-                writer_obj.write_dataframe(path_folder, folder_dataframe, self.output_path)
+                writer_obj.write_dataframe(path_folder, self.navigation_file_name, folder_dataframe, self.general_df_path)
             
             except Exception as e:
                 print(f'Warning: path {path_folder} shows the following error: {e}')
