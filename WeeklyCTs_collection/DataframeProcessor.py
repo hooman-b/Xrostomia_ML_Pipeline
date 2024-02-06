@@ -4,11 +4,27 @@ Explanation: This module is used to gather all the processes on the dataframe ju
 import os
 import pandas as pd
 import DataCollectionConfig as dcc
+
+from WeeklyctDataframeMaker import WeeklyctDataframeMaker
+
 class DataframeProcessor:
 
     def __init__(self):
         pass
     
+    def get_merged_df(self, week_df, main_df):
+        """
+        This function is used to make a week dataset
+        """
+        try:
+            final_df = week_df.merge(main_df, on=['ID', 'date']).drop(columns=['fraction'])
+        
+        except KeyError:
+            print(f'Warning: this week dataset has {week_df.shape} shape')
+            final_df = pd.DataFrame()
+        
+        return final_df
+
     def make_dataframe(self, group_list, df_type='Normal'):
 
         try:
@@ -46,6 +62,17 @@ class DataframeProcessor:
 
         return df_copy
 
+    def drop_duplicate_columns(self, df):
+        # Count the number of non-null session dates
+        df['NumNonNullSessions'] = df.iloc[:,1:10].count(axis=1)
+
+        # Drop duplicates keeping the row with the maximum number of non-null session dates
+        df = df.sort_values(by='NumNonNullSessions', ascending=False).drop_duplicates(subset='ID')
+
+        # Drop the helper column
+        df = df.drop(columns='NumNonNullSessions')
+
+        return df
 
     def concat_dataframes(self, df_name_list, df_path, reader_obj):
         """
@@ -55,6 +82,7 @@ class DataframeProcessor:
         final_df = pd.DataFrame()
 
         for name in df_name_list:
+            
             df = reader_obj.read_dataframe(df_path, name)
 
             try:
@@ -66,13 +94,28 @@ class DataframeProcessor:
 
         # Drop duplicated patients
         if 'weeklyct' in df_name_list[0].lower(): 
-            final_df = final_df.drop_duplicates(subset=['ID'])
+            final_df = self.drop_duplicate_columns(final_df)
 
         # Reset the index
         final_df = final_df.sort_values('ID').reset_index().drop(columns=['index'])
 
         return final_df
     
+    def concat_transferring_df(self, general_df, weekly_df, week_list):
+        weeklyct_df_maker = WeeklyctDataframeMaker()
+
+        final_transferring_df = pd.DataFrame()
+
+        # Make the datframe for each week and concat all of them to make a dataset
+        for week_name in week_list :
+            week_df = weeklyct_df_maker.get_a_week_information(general_df, weekly_df, week_name)
+            final_transferring_df = pd.concat([final_transferring_df, week_df], ignore_index=True)
+        
+        # Sort the dataset based on ID
+        final_transferring_df = final_transferring_df.sort_values('ID').reset_index().drop(columns=['index'])
+
+        return final_transferring_df
+
 
     def get_clinical_dataframe(self, reader_obj, clinical_df_path, clinical_df_name):
         """

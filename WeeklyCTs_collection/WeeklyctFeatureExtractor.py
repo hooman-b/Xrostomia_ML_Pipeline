@@ -1,6 +1,9 @@
 """
 Explanation: This module is a complemantary module to WeeklyctDataframeMake
 that contains all the nacessary functions to make the final WeeklyCT dataframe.
+
+Author: Hooman Bahrdo
+Last Revised:...
 """
 
 # General Libraries
@@ -147,7 +150,47 @@ class WeeklyctFeatureExtractor():
 
         except:
             return fraction_num
-        
+
+    def get_fraction_info(self, raw, week_name):
+        """
+        Extract fraction information based on modality adjustment and week name.
+        """
+        accelerated_list = dcc.accelerated_list
+        not_accelerated_list = dcc.not_accelerated_list
+        fraction_range_dict = dcc.fraction_range_dict
+
+        matching_list = []
+        fraction_seri = raw.iloc[11:20]
+
+        # Find any columns that have values inside the range of a a specific week
+        if raw.modality_adjusted in not_accelerated_list:
+            matching_list = [column for column in fraction_seri.index \
+            if (raw[column]is not None and raw[column] > fraction_range_dict[week_name]['not_accelerated'][0] \
+                and raw[column] <= fraction_range_dict[week_name]['not_accelerated'][1])]
+
+        elif raw.modality_adjusted in accelerated_list:
+            matching_list = [column for column in fraction_seri.index \
+            if (raw[column]is not None and raw[column] > fraction_range_dict[week_name]['accelerated'][0] \
+                and raw[column] <= fraction_range_dict[week_name]['accelerated'][1])]
+
+        return matching_list
+
+    def process_matching_fractions(self, raw, matching_list, week_name, week_list):
+        """
+        Process matching fractions and add relevant patient information to week_list.
+        """
+        # If finds a column, add some information of  that patient to the dictionary
+        if len(matching_list) > 0:
+            for matched_fraction in matching_list:
+                week_num = matched_fraction[-1]
+                week_list.append({'ID': raw.ID,
+                                'date': raw[f'Session{week_num}'],
+                                'treatment_week': week_name,
+                                'Fraction_num': matched_fraction, 
+                                'Fraction_magnitude': raw[matched_fraction], 
+                                'modality_adjusted': raw.modality_adjusted})
+
+            return week_list
 
     def extract_raw_weeklyct_features(self, id_num, patient_df, clinical_df):
             

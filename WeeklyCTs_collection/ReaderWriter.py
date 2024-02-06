@@ -89,15 +89,22 @@ class Writer():
     def make_folder_name_navigation(self, path, excess=''):
         
         try:
+
+            # When we have a path
             if '/' in path:
                 path_parts = path.split('/')
                 folder_name = path_parts[-1]
-            
+
+            # When we have a file name
             elif '.xlsx' in path.lower() or '.csv' in path.lower():
                 name_list = path.split('.')
                 folder_name = name_list[0].replace(excess, '')
                 folder_name = folder_name[1:]
-            print('hiiiiiiiiiii', folder_name)
+
+            # When we have the actual name
+            else:
+               folder_name = path
+
         except Exception as e:
             print(f'Warning: An exception in finding folder_name happened {e}')
             folder_name = ''

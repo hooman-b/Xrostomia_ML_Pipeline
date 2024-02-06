@@ -1,5 +1,11 @@
 """
-Explanation: In the following module, """
+Explanation: In the following module, weeklyCT datframes of each folder is made.
+Moreover, a final weeklyCT dataframe that contains weeklyCTs information of each 
+patient and some of their clinical information is made.
+
+Author: Hooman Bahrdo
+Last Revised:...
+"""
 
 # General Libraries
 import os
@@ -39,6 +45,25 @@ class WeeklyctDataframeMaker():
         self.writer_obj = Writer('Excel')
         self.df_processor_obj = DataframeProcessor()
         self.clinical_df = self.reader_obj.read_dataframe(dcc.clinical_df_path, dcc.clinical_df_name)
+
+
+    def make_a_week_df(self, main_df, weeklyct_df, week_name):
+
+        week_list = list()
+    
+        # Iterate through patients
+        for _, raw in weeklyct_df.iterrows():
+            matching_list = self.wfe.get_fraction_info(raw, week_name)
+            week_list = self.wfe.process_matching_fractions(raw, matching_list, week_list)
+
+        # Make a datafrme from the main folder
+        week_df = self.df_processor_obj.make_dataframe(week_list)
+        
+        # Merge the week dataset with path dataset (general dataset)
+        final_week_df = self.df_processor_obj.get_merged_df(week_df, main_df)
+        
+        return final_week_df
+
 
     def make_weeklyct_df(self, general_df):
         """
@@ -84,12 +109,11 @@ class WeeklyctDataframeMaker():
         # Slice the desired part of clinical df
         clinical_df = self.df_processor_obj.get_clinical_dataframe(self.reader_obj,
                                          dcc.clinical_df_path, dcc.clinical_df_name)
-        
+
         # Merge weeklyCT and clinical dfs to make the final df.
         final_weeklyct_df = df.merge(clinical_df, on='ID')
-        print(final_weeklyct_df)
+
         # Save the final datframe
-        print('hiiiiiiiiiiiii')
         self.writer_obj.write_dataframe(dcc.weeklyct_final_df_name, self.weeklyct_file_name, 
                                         final_weeklyct_df, self.weeklyct_df_path)
 
