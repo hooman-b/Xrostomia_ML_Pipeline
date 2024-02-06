@@ -5,8 +5,6 @@ import os
 import pandas as pd
 import DataCollectionConfig as dcc
 
-from WeeklyctDataframeMaker import WeeklyctDataframeMaker
-
 class DataframeProcessor:
 
     def __init__(self):
@@ -101,16 +99,18 @@ class DataframeProcessor:
 
         return final_df
     
-    def concat_transferring_df(self, general_df, weekly_df, week_list):
-        weeklyct_df_maker = WeeklyctDataframeMaker()
+    def concat_transferring_df(self, general_df, weekly_df, week_list, weeklyct_df_maker):
 
         final_transferring_df = pd.DataFrame()
 
         # Make the datframe for each week and concat all of them to make a dataset
         for week_name in week_list :
-            week_df = weeklyct_df_maker.get_a_week_information(general_df, weekly_df, week_name)
+            week_df = weeklyct_df_maker.make_a_week_df(general_df, weekly_df, week_name)
             final_transferring_df = pd.concat([final_transferring_df, week_df], ignore_index=True)
         
+        # Drop the doplicated folders
+        final_transferring_df = final_transferring_df.drop_duplicates(subset=['ID', 'folder_name', 'date'],
+                                        keep='first', inplace=False, ignore_index=True)        
         # Sort the dataset based on ID
         final_transferring_df = final_transferring_df.sort_values('ID').reset_index().drop(columns=['index'])
 

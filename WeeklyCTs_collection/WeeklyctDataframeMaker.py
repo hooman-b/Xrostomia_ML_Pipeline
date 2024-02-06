@@ -54,7 +54,7 @@ class WeeklyctDataframeMaker():
         # Iterate through patients
         for _, raw in weeklyct_df.iterrows():
             matching_list = self.wfe.get_fraction_info(raw, week_name)
-            week_list = self.wfe.process_matching_fractions(raw, matching_list, week_list)
+            self.wfe.process_matching_fractions(raw, matching_list, week_name, week_list)
 
         # Make a datafrme from the main folder
         week_df = self.df_processor_obj.make_dataframe(week_list)

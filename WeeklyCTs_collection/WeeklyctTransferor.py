@@ -41,16 +41,22 @@ class TransferringWeeklycts():
         self.reader_obj = Reader()
         self.writer_obj = Writer('Excel')
         self.df_processor_obj = DataframeProcessor()
-        
+        self.weeklyct_df_maker = WeeklyctDataframeMaker()
 
     def make_transferring_df(self):
 
         # Make a dataframe from all the general files
         file_names = self.reader_obj.raed_dataframe_names(self.general_df_path , 'general')
         general_df = self.df_processor_obj.concat_dataframes(file_names, self.general_df_path , self.reader_obj)
-        weekly_df = self.reader_obj.read_dataframe(self, self.weeklyct_df_path, self.final_weeklyct_name)
-        final_transferring_df = self.df_processor_obj.concat_transferring_df(self, general_df, weekly_df, self.week_list)
-
+        weekly_df = self.reader_obj.read_dataframe(self.weeklyct_df_path, self.final_weeklyct_name)
+        final_transferring_df = self.df_processor_obj.concat_transferring_df(general_df, weekly_df,
+                                                                              self.week_list, self.weeklyct_df_maker)
+        
         # Save the final datframe
         self.writer_obj.write_dataframe(dcc.transferring_filename_excess, self.transferring_file_name, 
                                         final_transferring_df, self.transferring_df_path)
+        
+
+if __name__ == "__main__":
+    aaa = TransferringWeeklycts()
+    aaa.make_transferring_df()
