@@ -24,7 +24,7 @@ class Navigator():
     This class searches multiple folders to find a specific type of images
     """
 
-    def __init__(self):
+    def __init__(self, df_processor_obj, writer_obj):
         self.navigation_paths = dcc.navigation_paths
         self.time_limit = dcc.time_limit
         self.general_df_path = dcc.general_df_path
@@ -32,7 +32,10 @@ class Navigator():
         self.navigation_file_name = dcc.navigation_file_name
         self.min_slice_num = dcc.min_slice_num
         self.modality = dcc.modality
-        self.general_writer_type = dcc.general_writer_type
+
+        self.df_processor_obj = df_processor_obj
+        self.writer_obj = writer_obj
+
 
     def _extract_image_information(self, subfolders):
         group = list()
@@ -71,19 +74,16 @@ class Navigator():
 
         return group
 
-    def navigate_folders(self):
-    
-        writer_obj = Writer(self.general_writer_type)
-        df_processor_obj = DataframeProcessor()
+    def make_image_feature_dfs(self):
 
         for path_folder in self.navigation_paths:
 
             # Find all the desired images in different folders
             try:
                 folder_list = self.navigate_folder(path_folder)
-                folder_dataframe = df_processor_obj.make_dataframe(folder_list)
-                folder_dataframe = df_processor_obj.clean_dataframe(folder_dataframe)
-                writer_obj.write_dataframe(path_folder, self.navigation_file_name, folder_dataframe, self.general_df_path)
+                folder_dataframe = self.df_processor_obj.make_dataframe(folder_list)
+                folder_dataframe = self.df_processor_obj.clean_dataframe(folder_dataframe)
+                self.writer_obj.write_dataframe(path_folder, self.navigation_file_name, folder_dataframe, self.general_df_path)
             
             except Exception as e:
                 print(f'Warning: path {path_folder} shows the following error: {e}')
@@ -95,7 +95,7 @@ def main():
     If somebody wants to navigate some folders without going further, they can use this function.
     """
     navigator_obj = Navigator()
-    navigator_obj.navigate_folders()
+    navigator_obj.make_image_feature_dfs()
 
 if __name__ == "__main__":
     main()

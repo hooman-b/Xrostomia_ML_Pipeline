@@ -34,18 +34,18 @@ from WeeklyctFeatureExtractor import WeeklyctFeatureExtractor as wfe
 
 class WeeklyctDataframeMaker():
 
-    def __init__(self):
+    def __init__(self, wfe_obj, df_processor_obj, reader_obj, writer_obj):
         self.general_df_path = dcc.general_df_path
         self.weeklyct_df_path = dcc.weeklyct_df_path
         self.save_individual_df = dcc.save_individual_weeklyct_df
         self.weeklyct_file_name = dcc.weeklyct_file_name
 
-        self.wfe = wfe()
-        self.reader_obj = Reader()
-        self.writer_obj = Writer('Excel')
-        self.df_processor_obj = DataframeProcessor()
-        self.clinical_df = self.reader_obj.read_dataframe(dcc.clinical_df_path, dcc.clinical_df_name)
-
+        self.wfe_obj = wfe_obj
+        self.reader_obj = reader_obj
+        self.writer_obj = writer_obj
+        self.df_processor_obj = df_processor_obj
+        self.clinical_df = self.reader_obj.read_dataframe(dcc.clinical_df_path,
+                                                           dcc.clinical_df_name)
 
     def make_a_week_df(self, main_df, weeklyct_df, week_name):
 
@@ -53,8 +53,8 @@ class WeeklyctDataframeMaker():
     
         # Iterate through patients
         for _, raw in weeklyct_df.iterrows():
-            matching_list = self.wfe.get_fraction_info(raw, week_name)
-            self.wfe.process_matching_fractions(raw, matching_list, week_name, week_list)
+            matching_list = self.wfe_obj.get_fraction_info(raw, week_name)
+            self.wfe_obj.process_matching_fractions(raw, matching_list, week_name, week_list)
 
         # Make a datafrme from the main folder
         week_df = self.df_processor_obj.make_dataframe(week_list)
@@ -76,10 +76,10 @@ class WeeklyctDataframeMaker():
 
         for counter, id_num in enumerate(id_df[0]):
             patient_df = id_df[1][counter]
-            weekly_cts_group.append(self.wfe.extract_raw_weeklyct_features(id_num[0], patient_df, self.clinical_df))
+            weekly_cts_group.append(self.wfe_obj.extract_raw_weeklyct_features(id_num[0], patient_df, self.clinical_df))
 
         raw_weeklyct_df = self.df_processor_obj.make_dataframe(weekly_cts_group, df_type='WeeklyCT')
-        corrected_weeklyct_df = self.wfe.correct_fractions(raw_weeklyct_df)
+        corrected_weeklyct_df = self.wfe_obj.correct_fractions(raw_weeklyct_df)
 
         return corrected_weeklyct_df
 

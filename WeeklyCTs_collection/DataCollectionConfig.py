@@ -37,7 +37,7 @@ navigation_file_name = 'General_information'  # The name of the excel file. it s
 time_limit = pd.Timestamp('2014-01-01') # the threshold time (all the images before this time will be removed)
 min_slice_num = 50 # Minum number of slides per folder
 modality = 'CT' # Desired modality
-general_writer_type = 'Excel' # This determines the typr os savinh files ('Excel', 'CSV')
+writer_type = 'Excel' # This determines the typr os savinh files ('Excel', 'CSV')
 
 
 # Make WeeklyCT Dataframe Phase
@@ -95,3 +95,40 @@ css = '''
     border-color: black;
 }
 '''
+
+
+#    ######### Contorl Room :)))) #########
+# Here you have access to different switches that can be turned on or off
+# based on a part of the pipeline you want to use. I will explain each switch
+# in the following part:
+
+# Navigator Switch: If you want to navigate any folder, you need to turn this
+# switch ON (True); otherwise, it should be OFF (False).
+navigator_switch = True
+
+# WeeklyCT-df Switch: If you want to to make the weeklyCT dataframes based
+# on the folders that you have you can just use this switch. you need to turn this
+# switch ON (True); otherwise, it should be OFF (False).
+weeklyct_df = True
+
+# WeeklyCT-df Switch: If you want to make a whole weeklyCT dataframe based
+# on the weeklyCT dfs of all the folders, use this key. you need to turn this
+# switch ON (True); otherwise, it should be OFF (False). Note: This step is 
+# necessary before making the dashboard since this switch basically make the 
+# dataset for dashboard.
+weeklyct_final_df = True
+
+# Transferring df Switch: If you want to have a dataframe from all the information
+#  regarding the folders in which weeklyCTs are stored, you can use this Switch. you
+# need to turn this switch ON (True); otherwise, it should be OFF (False). Note: This
+# step is essential before using the transferor since it basically make its dataframe.
+transferring_df = True
+
+# Transferor Switch: If you want to transfer the weeklyCT in a new folder you can use
+# this switch. you need to turn this switch ON (True); otherwise, it should be OFF (False).
+transferor = True
+
+# Dashboard Switch: If you want to have a dashboard from WeeklyCT datasets (final and
+# based on labels), you can use this switch. you need to turn this switch ON (True); 
+# otherwise, it should be OFF (False). Make sure you make the final WeeklyCT dfs first.
+dashboard = False

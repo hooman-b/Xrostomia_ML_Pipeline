@@ -29,19 +29,22 @@ from ReaderWriter import Reader, Writer
 from DataframeProcessor import DataframeProcessor
 from WeeklyctFeatureExtractor import WeeklyctFeatureExtractor as wfe
 from WeeklyctDataframeMaker import WeeklyctDataframeMaker
+
+
 class TransferringWeeklycts():
     
-    def __init__(self):
+    def __init__(self, weeklyct_df_maker, df_processor_obj, reader_obj, writer_obj):
         self.general_df_path = dcc.general_df_path
         self.final_weeklyct_name = dcc.final_weeklyct_name
         self.weeklyct_df_path = dcc.weeklyct_df_path
         self.week_list = dcc.week_list
         self.transferring_file_name = dcc.transferring_file_name
         self.transferring_df_path = dcc.transferring_df_path
-        self.reader_obj = Reader()
-        self.writer_obj = Writer('Excel')
-        self.df_processor_obj = DataframeProcessor()
-        self.weeklyct_df_maker = WeeklyctDataframeMaker()
+
+        self.reader_obj = reader_obj
+        self.writer_obj = writer_obj
+        self.df_processor_obj = df_processor_obj
+        self.weeklyct_df_maker = weeklyct_df_maker
 
     def make_transferring_df(self):
 
