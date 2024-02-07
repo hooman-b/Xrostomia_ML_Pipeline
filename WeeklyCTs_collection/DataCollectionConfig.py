@@ -28,7 +28,8 @@ general_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART_
 weeklyct_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART_DATA2/WeeklyCT_dataframes'
 # Transferring output path 
 transferring_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART_DATA2/General_dataframes'
-
+# Dashboard output path
+dashboard_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART Hooman/WeeklyCT Dataset/Program & Docs/Plotting'
 
 # Navigation Phase
 exclusion_set = {'detail', 'ac_ct', 'ld_ct', 'ld ct', 'ac ct'}  # images wanted to be excluded
@@ -78,3 +79,19 @@ week_list = list(fraction_range_dict.keys())
 transferring_file_name = 'Transferring_information'
 final_weeklyct_name = 'WeeklyCT_dataframe_final.xlsx'
 transferring_filename_excess = ''
+
+
+# Dashboard phase
+# CSS styling
+css = '''
+.sidebar_button .bk-btn-group button {
+    border-radius: 6px;
+    font-weight: bolder;
+}
+
+.option_button .bk-btn-default.bk-active {
+    background-color: #00dcff38;
+    font-weight: bold;
+    border-color: black;
+}
+'''
