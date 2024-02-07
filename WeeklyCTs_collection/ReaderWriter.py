@@ -5,6 +5,7 @@ Author: Hooman Bahrdo
 Last Revised:...
 """
 import os
+import shutil
 import pickle
 import numpy as np
 import pandas as pd
@@ -69,6 +70,13 @@ class Writer():
 
     def __init__(self, writer_type):
         self.writer_type = writer_type
+
+    def copy_file(self, src_path, dst_path):
+        try:
+            shutil.copy(src_path, dst_path)  # Use shutil.copy to copy the file
+
+        except Exception as e:
+            print(f"Error copying file: {e}")
 
     def directory_maker(self, directory):
         """

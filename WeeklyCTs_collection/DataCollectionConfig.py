@@ -28,6 +28,8 @@ general_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART_
 weeklyct_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART_DATA2/WeeklyCT_dataframes'
 # Transferring output path 
 transferring_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/OPC_data/ART_DATA2/General_dataframes'
+
+
 # Navigation Phase
 exclusion_set = {'detail', 'ac_ct', 'ld_ct', 'ld ct', 'ac ct'}  # images wanted to be excluded
 navigation_file_name = 'General_information'  # The name of the excel file. it should contain
