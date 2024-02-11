@@ -22,12 +22,16 @@ class ImageFeatureExtractor():
     def __init__(self):
         self.image = ''
     
-    def make_ct_image(self, subf):
+    def make_ct_image(self, subf, mode):
 
         try:
-            # Make the image
-            ct_image = pdcm.dcmread(glob.glob(subf+"/*.DCM")[0],force=True)
-        
+            if mode == 'Navigation':
+                # Make the image
+                ct_image = pdcm.dcmread(glob.glob(subf+"/*.DCM")[0],force=True)
+            
+            elif mode == 'Checking':
+                ct_image = [pdcm.dcmread(path) for path in subf]
+                return ct_image
         except:
             print(f'Warning: There is no image in {subf}')
         
@@ -141,6 +145,15 @@ class ImageFeatureExtractor():
         
         return uid
 
+    def get_sop_uid(self):
+        # Extract UID
+        try:
+            uid = self.image.SOPInstanceUID
+        except:
+            uid = None
+        
+        return uid
+  
     def get_probable_weklyct_name(self, name, number, names_list, saver):
         """
         Explanation: This method find the name of the weeklyCT. It can be a combination with

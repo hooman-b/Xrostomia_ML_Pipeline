@@ -38,7 +38,7 @@ time_limit = pd.Timestamp('2014-01-01') # the threshold time (all the images bef
 min_slice_num = 50 # Minum number of slides per folder
 modality = 'CT' # Desired modality
 writer_type = 'Excel' # This determines the typr os savinh files ('Excel', 'CSV')
-
+image_read_mode = 'Navigation'
 
 # Make WeeklyCT Dataframe Phase
 save_individual_weeklyct_df = True # Whether you want to save an individual dataframe or not

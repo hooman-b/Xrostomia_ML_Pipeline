@@ -5,6 +5,7 @@ Author: Hooman Bahrdo
 Last Revised:...
 """
 import os
+import re
 import cv2
 import shutil
 import pickle
@@ -75,7 +76,40 @@ class Reader():
         
         except ValueError:
             print(f'File {name} is not supported by this program.')
+    
+    def order_dicom_direction(self, subf):
+        dicom_files = os.listdir(subf)
 
+        if 'IM' in dicom_files[0]:
+            sorted_im_dirs = sorted(dicom_files, key=self.im_sort_key)
+
+        elif len(re.findall('_' , dicom_files[0])) > 1:
+            sorted_im_dirs = sorted(dicom_files, key=self.uderline_sort_key)
+        
+        elif '95434' in dicom_files[0] or '1005' in dicom_files[0]: 
+            sorted_im_dirs = sorted(dicom_files, key=self.dot_sort_key)
+
+        else:
+            sorted_im_dirs = sorted(dicom_files)
+
+        dicom_im_dirs = [os.path.join(subf, im_dir) for im_dir in sorted_im_dirs]
+
+        return dicom_im_dirs
+
+    @staticmethod
+    def uderline_sort_key(filename):
+        name_list = filename.split('_')
+        return int(name_list[3])
+
+    @staticmethod
+    def im_sort_key(filename):
+        return int(filename[2:-4])
+
+    @staticmethod
+    def dot_sort_key(filename):
+        name_list = filename.split('.')
+        return int(name_list[-2])
+    
 class Writer():
 
     def __init__(self, writer_type):

@@ -32,9 +32,11 @@ class Navigator():
         self.navigation_file_name = dcc.navigation_file_name
         self.min_slice_num = dcc.min_slice_num
         self.modality = dcc.modality
+        self.image_read_mode = dcc.image_read_mode
         self.feature_extractor_obj = ImageFeatureExtractor()
         self.df_processor_obj = df_processor_obj
         self.writer_obj = writer_obj
+        
 
 
     def _extract_image_information(self, subfolders):
@@ -47,7 +49,7 @@ class Navigator():
             if slice_num > self.min_slice_num:
                 
                 # Store the proper CT image in the object
-                self.feature_extractor_obj.make_ct_image(subf)
+                self.feature_extractor_obj.make_ct_image(subf, self.image_read_mode)
         
                 # Extract the information of the image 
                 folder_name = self.feature_extractor_obj.get_folder_name()

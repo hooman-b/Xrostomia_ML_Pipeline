@@ -12,3 +12,7 @@ nifti_seg_output_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/H
 
 # ContourMaker Module
 binary_mask_name = 'binary_mask.png'
+
+# ImageMatchChecker Module
+inclusion_criteria = ct_substrings = ['\ct', '\hals', '\week3', '\w3ct']
+image_read_mode = 'Checking'
