@@ -9,3 +9,6 @@ Last Revised:...
 # NiftiFileMaker Module:
 nifti_ct_output_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/NIFTI_CT'
 nifti_seg_output_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/NIFTI_segmentation'
+
+# ContourMaker Module
+binary_mask_name = 'binary_mask.png'

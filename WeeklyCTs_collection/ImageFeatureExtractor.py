@@ -19,20 +19,19 @@ from pydicom.tag import Tag
 
 class ImageFeatureExtractor():
 
-    def __init__(self, subf):
-        self.subf = subf
-        self.image = self.make_image(subf)
+    def __init__(self):
+        self.image = ''
     
-    def make_image(self, subf):
+    def make_ct_image(self, subf):
 
         try:
             # Make the image
-            image = pdcm.dcmread(glob.glob(subf+"/*.DCM")[0],force=True)
+            ct_image = pdcm.dcmread(glob.glob(subf+"/*.DCM")[0],force=True)
         
         except:
             print(f'Warning: There is no image in {subf}')
         
-        return image
+        self.image = ct_image
 
     def get_folder_name(self):
 
@@ -42,8 +41,8 @@ class ImageFeatureExtractor():
 
         # Make the folder name based on the name of the folder
         except:
-            study = self.get_study_inf(self)
-            patient_id = self.get_patient_id(self)
+            study = self.get_study_inf()
+            patient_id = self.get_patient_id()
             folder_name = self.subf.split('\\')[-1]  
             print(f'Warning: folder {study} with {patient_id} ID does NOT have Series Description')
     
@@ -120,6 +119,17 @@ class ImageFeatureExtractor():
             pixel_spacing = None
         
         return pixel_spacing   
+
+    def get_image_position(self):
+
+        # Extract the image position (x, y, z)
+        try:
+            im_position = self.image.ImagePositionPatient
+    
+        except:
+            im_position = None
+    
+        return im_position
 
     def get_ref_uid(self):
 
@@ -220,3 +230,27 @@ class ImageFeatureExtractor():
                 'num_slices': slice_num, 'pixel_spacing': pixel_spacing, 'contrast': contrast,
                 'UID': uid, 'path': self.subf
                 }
+    
+    # Make some functions related to Segmentation images
+    def get_contour_uid(self, contour_item):
+        
+        # Extract contour information and uids
+        contour_inf = contour_item.get((0x3006, 0x0016))
+        contour_uid = contour_inf[0]['00081155'].value
+
+        return contour_uid
+    def get_contour_data(self,contour_item):
+
+        try:
+            contour_data = contour_item.get((0x3006, 0x0050))
+        
+        except Exception:
+            contour_data = None
+        
+        return contour_data
+
+    def find_ct_match_seg(self, dicom_images, dicom_images_uid, contour_uid):
+        # Assign a set of images to th eimage attribut to get the attribut
+        self.image = dicom_images[dicom_images_uid.index(contour_uid)]
+    
+    

@@ -5,6 +5,7 @@ Author: Hooman Bahrdo
 Last Revised:...
 """
 import os
+import cv2
 import shutil
 import pickle
 import numpy as np
@@ -26,6 +27,15 @@ class Reader():
     #         if 'general' in name.lower():
     #             general_df_name_list.append(name)
     #     return general_df_name_list
+
+    def read_cv2_image(self, name):
+        try:
+            image = cv2.imread(name)
+
+        except Exception as e:
+            print(f'Warning: loading cv2 image has faild {e}')
+            image = None
+        return image
 
     def raed_dataframe_names(self, path, desired_file):
         """
@@ -119,6 +129,13 @@ class Writer():
         
         return folder_name
 
+    def write_cv2_image(self, name, image):
+        
+        try:
+            cv2.imwrite(name, image)
+        
+        except Exception as e:
+            print(f'Warning: {e} happend during saving cv2 image.')
 
     def write_dataframe(self, folder_path_name, file_name, dataframe, dst_path, excess=''):
         """

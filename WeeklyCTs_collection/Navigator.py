@@ -32,7 +32,7 @@ class Navigator():
         self.navigation_file_name = dcc.navigation_file_name
         self.min_slice_num = dcc.min_slice_num
         self.modality = dcc.modality
-
+        self.feature_extractor_obj = ImageFeatureExtractor()
         self.df_processor_obj = df_processor_obj
         self.writer_obj = writer_obj
 
@@ -45,17 +45,19 @@ class Navigator():
 
             # find whether subf is a path and the number of .DCM images is more than 50
             if slice_num > self.min_slice_num:
-
+                
+                # Store the proper CT image in the object
+                self.feature_extractor_obj.make_ct_image(subf)
+        
                 # Extract the information of the image 
-                feature_extractor_obj = ImageFeatureExtractor(subf)
-                folder_name = feature_extractor_obj.get_folder_name()
+                folder_name = self.feature_extractor_obj.get_folder_name()
                 
                 # Extract the images' information
-                if feature_extractor_obj.image.Modality == self.modality and \
+                if self.feature_extractor_obj.image.Modality == self.modality and \
                     all(keyword not in folder_name.lower() for keyword in self.exclusion_set):
 
                     # Add the information of this group to the total dataset
-                    group.append(feature_extractor_obj.get_image_information())
+                    group.append(self.feature_extractor_obj.get_image_information())
         return group
 
     def navigate_folder(self, path_folder):

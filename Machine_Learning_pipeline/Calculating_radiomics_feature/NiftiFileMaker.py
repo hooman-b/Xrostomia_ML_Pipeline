@@ -36,6 +36,9 @@ from WeeklyCTs_collection.ReaderWriter import Writer
 import RadiomicsConfig as rc
 
 class NiftiFileMaker():
+    """
+    Explanation: This class makes NIFTI files and store them in the desired paths.
+    """
 
     def __init__(self):
         self.nifti_ct_output_path = rc.nifti_ct_output_path
