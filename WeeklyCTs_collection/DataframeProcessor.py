@@ -42,6 +42,13 @@ class DataframeProcessor:
             print(f'Warning: There is an error with this dataset {e}')
             return pd.DataFrame()
 
+    def make_dataframe_radiomics(self, radiomics_dict):
+        df = pd.DataFrame.from_dict(radiomics_dict).transpose()
+        df = df.reset_index()
+        df = df.rename(columns={'level_0':'ID', 'level_1':'OAR'})
+        
+        return df
+
     def clean_dataframe(self, df):
         """
         clean the dataset

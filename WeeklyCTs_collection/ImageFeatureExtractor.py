@@ -8,8 +8,10 @@ Last Revised:...
 """
 # Import Libraries
 # General Libraries
+import os
 import re
 import glob
+import SimpleITK as sitk
 from datetime import datetime
 
 # DICOM Libraries
@@ -37,6 +39,15 @@ class ImageFeatureExtractor():
         # Assign a set of images to th eimage attribut to get the attribut
         self.image = dicom_images[dicom_images_uid.index(contour_uid)]
 
+    def make_ct_image_nifti(self, subf):
+        try:
+            # Make the image
+            image = sitk.ReadImage(glob.glob(subf+"/*.nii")[0])
+        except:
+            print(f'Warning: There is no image in {subf}')
+        
+        self.image = image
+           
     def get_folder_name(self):
 
         # find the name of the folder
@@ -291,7 +302,19 @@ class ImageFeatureExtractor():
             contour_name = None
         
         return contour_name 
-     
+    
+    def get_contour_patient_id(self, subf):
+
+        try:
+            # Access DICOM header information
+            dicom_header = self.image.GetMetaData()
+            # Extract Patient ID code
+            return dicom_header['ID']
+        
+        except Exception as e:
+            subf_list = subf.split('\\')
+            return str(int(subf_list[1]))
+    
     def find_number_list(self, oar_names, oar_extra_names):
 
         # Find the number of OARs  in this segmentation map

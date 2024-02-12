@@ -65,7 +65,7 @@ class NiftiFileMaker():
 
 
 
-    def save_nifti_files(self, name, matrix, ct_image, nifti_patient_dir):
+    def save_nifti_files(self, name, matrix, ct_image, nifti_patient_dir, patient_id):
         """
         Explanation: This function saves segmentation maps NIFTI file in a desired direction
         """
@@ -84,6 +84,7 @@ class NiftiFileMaker():
         image.SetSpacing((pixel_spacing[0], pixel_spacing[1], slice_thickness))
         image.SetOrigin(origin)
         image.SetDirection(np.identity(3).flatten())
+        image.SetMetaData('ID', patient_id)
 
         # Save the SimpleITK image to a NIfTI file
         sitk.WriteImage(image, os.path.join(nifti_patient_dir, f'{name}.nii'))
@@ -104,7 +105,7 @@ class NiftiFileMaker():
 
         # Save each OAR seperately
         for key, value in filled_contours_dict.items():
-            self.save_nifti_files(key, value, ct_image, nifti_patient_dir)
+            self.save_nifti_files(key, value, ct_image, nifti_patient_dir, patient_id)
 
     def make_ct_nifti_file(self, dicom_im_dirs, patient_id):
 

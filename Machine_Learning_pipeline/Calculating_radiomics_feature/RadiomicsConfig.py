@@ -30,8 +30,12 @@ image_read_mode = 'Checking'
 slide_threshold = 5
 
 # RadiomicsFeatureCalculator Module:
-
-
+# This is another criteria for the condition of the folders that one store nifti files in it.
+seg_nifti_folder_condition = True 
+radiomics_settings = {'binWidth': 25} # One can use other settings such as 'geometryTolerance'
+radiomics_df_name = 'Radiomics_features'
+radiomics_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/CT'
+Radiomics_df_type = 'Excel'
 
 # Switches
 make_ct_nifti = True

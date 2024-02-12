@@ -79,3 +79,12 @@ class ImageMatchChecker():
                         print(subf, e)
                         pass
     
+    def find_ct_match_contour_nifti(self, subf, patient_id):
+
+            patient_ct_path = os.path.join(subf, patient_id)
+            files_names = os.listdir(patient_ct_path)
+            if '.nii' in files_names[0]:
+                return os.path.join(patient_ct_path, files_names[0])
+            
+            else:
+                return None
