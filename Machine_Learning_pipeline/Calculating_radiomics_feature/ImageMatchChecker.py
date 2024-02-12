@@ -88,3 +88,23 @@ class ImageMatchChecker():
             
             else:
                 return None
+        
+    
+    def find_rtdose_match_contour(self, path):
+
+        try:
+            for r, d, f in os.walk(path):
+                subfolders = [os.path.join(r, folder) for folder in d]
+
+                # try:
+                for subf in subfolders:
+
+                    directions = os.listdir(subf)
+
+                    if '.dcm' in directions[0].lower() and 'rtdose' in subf.lower():
+                        rtdose_path = os.path.join(subf, directions[0])
+                        return rtdose_path
+        
+        except Exception as e:
+            print(f'Warning: error {e} has been occured in matching RTDOSE')
+            return None

@@ -11,6 +11,7 @@ nifti_ct_output_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Ho
 nifti_seg_output_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/NIFTI_segmentation'
 seg_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/segmentation'
 ct_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/CT'
+rtdose_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/RTDOSE'
 
 # This variable can be any condition. It is used as the criteria for searching contours folders.
 # If there is a specific structure in the order of the folders, write it here.
@@ -36,6 +37,14 @@ radiomics_settings = {'binWidth': 25} # One can use other settings such as 'geom
 radiomics_df_name = 'Radiomics_features'
 radiomics_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/CT'
 Radiomics_df_type = 'Excel'
+
+# RTDoseCalculator Module
+# It can be any condition compatible with the folder structure of the RTDOSE.
+rdose_folder_condition = True
+rtdose_df_name = 'RTDose'
+rtdose_df_path = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Test_code_hooman/RTDOSE'
+rtdose_oar_list = ['DLC_Parotid_L', 'DLC_Parotid_R']
+rtdose_df_type = 'Excel'
 
 # Switches
 make_ct_nifti = True

@@ -36,7 +36,9 @@ class DataframeProcessor:
                 return df_final
 
             else:
-                return pd.DataFrame(group_list)
+                df_final = pd.DataFrame(group_list)
+                df_final = df_final.reset_index().drop(columns=['index'])
+                return df_final
         
         except Exception as e:
             print(f'Warning: There is an error with this dataset {e}')
@@ -48,7 +50,7 @@ class DataframeProcessor:
         df = df.rename(columns={'level_0':'ID', 'level_1':'OAR'})
         
         return df
-
+        
     def clean_dataframe(self, df):
         """
         clean the dataset
