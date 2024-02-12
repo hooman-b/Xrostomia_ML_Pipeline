@@ -45,7 +45,7 @@ class ContourMaker():
         self.writer_obj = Writer('Excel')
         self.reader_obj = Reader()
 
-    def making_continous_contour(self, binary_mask, y_pix, x_pix):
+    def make_continous_contour(self, binary_mask, y_pix, x_pix):
 
         output_segmentation_map = np.zeros_like(binary_mask, dtype=np.uint8)
         
@@ -99,7 +99,7 @@ class ContourMaker():
 
             return x_pixel_list, y_pixel_list, z_pixel_list
 
-    def making_hollow_contour_matrix(self, contour_sequence, dicom_images, dicom_images_uid):
+    def make_hollow_contour_matrix(self, contour_sequence, dicom_images, dicom_images_uid):
 
         # make a matrix to save the masks in the correct format
         contour_matrix = np.zeros((len(dicom_images), dicom_images[0].Rows, dicom_images[0].Columns), dtype=np.uint8)
@@ -124,16 +124,16 @@ class ContourMaker():
 
             # Add the continous new mask to the final dictionary
             if contour_uid in binary_mask_continous.keys():
-                binary_mask_continous[contour_uid] += self.making_continous_contour(binary_masks[contour_uid], y_pixel_list, x_pixel_list)
+                binary_mask_continous[contour_uid] += self.make_continous_contour(binary_masks[contour_uid], y_pixel_list, x_pixel_list)
             else:
-                binary_mask_continous[contour_uid] = self.making_continous_contour(binary_masks[contour_uid], y_pixel_list, x_pixel_list)
+                binary_mask_continous[contour_uid] = self.make_continous_contour(binary_masks[contour_uid], y_pixel_list, x_pixel_list)
 
             assigned_index = dicom_images_uid.index(contour_uid)
             contour_matrix[assigned_index,:,:] = binary_mask_continous[contour_uid]
         
         return contour_matrix
 
-    def filling_contours(self, binary_masks):
+    def fill_contours(self, binary_masks):
         filled_masks = []
         #continous_array = np.array(list(binary_masks.values()))
         continous_array = binary_masks

@@ -40,32 +40,14 @@ from WeeklyCTs_collection.ReaderWriter import Writer, Reader
 class ImageMatchChecker():
 
     def __init__(self):
-        self.inclusion_criteria = rc.inclusion_criteria
-        self.image_read_mode = rc.image_read_mode
+        self.inclusion_criteria = rc.inclusion_criteria_checker
+        self.slide_threshold = rc.slide_threshold
+        # self.image_read_mode = rc.image_read_mode
 
         self.ife = ImageFeatureExtractor()
         self.reader_obj =Reader()
 
-    def making_dir_dicom(self, subf):
-            dicom_files = os.listdir(subf)
-
-            if 'IM' in dicom_files[0]:
-                sorted_im_dirs = sorted(dicom_files, key=self.im_sort_key)
-
-            elif len(re.findall('_' , dicom_files[0])) > 1:
-                sorted_im_dirs = sorted(dicom_files, key=self.uderline_sort_key)
-            
-            elif '95434' in dicom_files[0] or '1005' in dicom_files[0]: 
-                sorted_im_dirs = sorted(dicom_files, key=self.dot_sort_key)
-
-            else:
-                sorted_im_dirs = sorted(dicom_files)
-
-            dicom_im_dirs = [os.path.join(subf, im_dir) for im_dir in sorted_im_dirs]
-
-            return dicom_im_dirs
-
-    def finding_ct_match_contour(self, patient_ct_dir, contour_uid_list, slide_threshold=5):
+    def find_ct_match_contour(self, patient_ct_dir, contour_uid_list):
         
         # Loop through all the directories inside this folder
         for r, d, f in os.walk(patient_ct_dir):
@@ -90,8 +72,8 @@ class ImageMatchChecker():
                                 match_uid_list.append(image_uid)
                         
                         # return the CT that matches the contour
-                        if len(match_uid_list) > slide_threshold:
-                            return dicom_images, dicom_im_dirs, dicom_images_uid, subf
+                        if len(match_uid_list) > self.slide_threshold :
+                            return dicom_images, dicom_im_dirs, dicom_images_uid
                             
                     except Exception as e:
                         print(subf, e)

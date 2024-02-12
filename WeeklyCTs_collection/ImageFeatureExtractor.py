@@ -22,20 +22,20 @@ class ImageFeatureExtractor():
     def __init__(self):
         self.image = ''
     
-    def make_ct_image(self, subf, mode):
+    def make_ct_image(self, subf):
 
         try:
-            if mode == 'Navigation':
-                # Make the image
-                ct_image = pdcm.dcmread(glob.glob(subf+"/*.DCM")[0],force=True)
+            # Make the image
+            ct_image = pdcm.dcmread(glob.glob(subf+"/*.DCM")[0],force=True)
             
-            elif mode == 'Checking':
-                ct_image = [pdcm.dcmread(path) for path in subf]
-                return ct_image
         except:
             print(f'Warning: There is no image in {subf}')
         
         self.image = ct_image
+
+    def find_ct_match_seg(self, dicom_images, dicom_images_uid, contour_uid):
+        # Assign a set of images to th eimage attribut to get the attribut
+        self.image = dicom_images[dicom_images_uid.index(contour_uid)]
 
     def get_folder_name(self):
 
@@ -252,6 +252,7 @@ class ImageFeatureExtractor():
         contour_uid = contour_inf[0]['00081155'].value
 
         return contour_uid
+
     def get_contour_data(self,contour_item):
 
         try:
@@ -262,8 +263,49 @@ class ImageFeatureExtractor():
         
         return contour_data
 
-    def find_ct_match_seg(self, dicom_images, dicom_images_uid, contour_uid):
-        # Assign a set of images to th eimage attribut to get the attribut
-        self.image = dicom_images[dicom_images_uid.index(contour_uid)]
+    def get_contour_sequence(self, number):
+        try:
+            contour_sequence = list(self.image['30060039'][number]['30060040'])
+        
+        except Exception:
+            contour_sequence = None
+        
+        return contour_sequence
+
+    def get_contour_name(self, number):
+        try:
+            contour_name = self.image['30060020'][number]['30060026'].value
+        
+        except Exception:
+            contour_name = None
+        
+        return contour_name
+
+    def get_contour_uid_list(self, contour_sequence):
+
+        try:
+            contour_name = [contour_item.get((0x3006, 0x0016))[0]['00081155'].value 
+                                                for contour_item in contour_sequence]
+        
+        except Exception:
+            contour_name = None
+        
+        return contour_name 
+     
+    def find_number_list(self, oar_names, oar_extra_names):
+
+        # Find the number of OARs  in this segmentation map
+        number_list = []
+
+        for counter, oar in enumerate(self.image['30060020']):
+            if oar['30060026'].value in oar_names:
+                number_list.append(counter)
+            
+            elif oar['30060026'].value in oar_extra_names:
+                number_list.append(counter)
+             
+        return number_list
+
+
     
     
