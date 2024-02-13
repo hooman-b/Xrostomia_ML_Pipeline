@@ -95,14 +95,15 @@ class RadiomicsFeatureCalculator():
             try:
                 for subf in subfolders:
                     
-                    if self.seg_nifti_folder_condition:
+                    if any(substring in subf.lower() for substring in self.seg_nifti_folder_condition):
                         directions = os.listdir(subf)
-
-                        if '.nii' in directions[0].lower():
+   
+                        if any('.nii' in item.lower() for item in directions):
                             self.ife_obj.make_ct_image_nifti(subf)
                             patient_id = self.ife_obj.get_contour_patient_id(subf)
+                            print(patient_id)
                             ct_nifti_path = self.imc_obj.find_ct_match_contour_nifti(self.nifti_ct_output_path, patient_id)
-
+                            
                             radiomics_features_dict = self.calculate_radiomics_features(subf, ct_nifti_path, patient_id)
 
                             # add the new features to the man dictionary

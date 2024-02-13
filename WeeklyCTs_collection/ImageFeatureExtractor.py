@@ -45,7 +45,8 @@ class ImageFeatureExtractor():
             image = sitk.ReadImage(glob.glob(subf+"/*.nii")[0])
         except:
             print(f'Warning: There is no image in {subf}')
-        
+            image = None
+            
         self.image = image
            
     def get_folder_name(self):

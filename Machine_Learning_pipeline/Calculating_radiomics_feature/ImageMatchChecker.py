@@ -40,7 +40,7 @@ from WeeklyCTs_collection.ReaderWriter import Writer, Reader
 class ImageMatchChecker():
 
     def __init__(self):
-        self.inclusion_criteria = rc.inclusion_criteria_checker
+        self.inclusion_criteria_checker = rc.inclusion_criteria_checker
         self.slide_threshold = rc.slide_threshold
         # self.image_read_mode = rc.image_read_mode
 
@@ -56,24 +56,26 @@ class ImageMatchChecker():
             for subf in subfolders: # Loop through the folders 
 
                 # Find ct files
-                if any(substring in subf.lower() for substring in self.inclusion_criteria):
+                if any(substring in subf.lower() for substring in self.inclusion_criteria_checker):
                     match_uid_list = []
 
                     try:
-                        # Find the uid of the images
-                        dicom_im_dirs =self.reader_obj.order_dicom_direction(subf)
-                        dicom_images = [pydicom.dcmread(path) for path in dicom_im_dirs]
-                        dicom_images_uid = [ct_image.SOPInstanceUID for ct_image in dicom_images]
-            
-                        # Loop through CTs uids
-                        for image_uid in dicom_images_uid:
+                        directions = os.listdir(subf)
+                        if any('.dcm' in item.lower() for item in directions):
+                            # Find the uid of the images
+                            dicom_im_dirs =self.reader_obj.order_dicom_direction(subf)
+                            dicom_images = [pydicom.dcmread(path) for path in dicom_im_dirs]
+                            dicom_images_uid = [ct_image.SOPInstanceUID for ct_image in dicom_images]
+                
+                            # Loop through CTs uids
+                            for image_uid in dicom_images_uid:
 
-                            if image_uid in contour_uid_list:
-                                match_uid_list.append(image_uid)
-                        
-                        # return the CT that matches the contour
-                        if len(match_uid_list) > self.slide_threshold :
-                            return dicom_images, dicom_im_dirs, dicom_images_uid
+                                if image_uid in contour_uid_list:
+                                    match_uid_list.append(image_uid)
+                            
+                            # return the CT that matches the contour
+                            if len(match_uid_list) > self.slide_threshold :
+                                return dicom_images, dicom_im_dirs, dicom_images_uid
                             
                     except Exception as e:
                         print(subf, e)
@@ -81,13 +83,19 @@ class ImageMatchChecker():
     
     def find_ct_match_contour_nifti(self, subf, patient_id):
 
-            patient_ct_path = os.path.join(subf, patient_id)
-            files_names = os.listdir(patient_ct_path)
-            if '.nii' in files_names[0]:
-                return os.path.join(patient_ct_path, files_names[0])
-            
-            else:
-                return None
+        patient_ct_path = os.path.join(subf, patient_id)
+        
+        # Get a list of all files in the patient directory
+        files = os.listdir(patient_ct_path)
+        
+        # Filter the files to find the ones with a '.nii' extension
+        nifti_files = [file for file in files if file.lower().endswith('.nii')]
+        
+        if nifti_files:
+            # Return the path of the first .nii file found
+            return os.path.join(patient_ct_path, nifti_files[0])
+        else:
+            return None
         
     
     def find_rtdose_match_contour(self, path):

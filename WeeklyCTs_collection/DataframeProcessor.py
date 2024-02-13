@@ -1,14 +1,18 @@
 """
 Explanation: This module is used to gather all the processes on the dataframe just in one module.
 """
+
+
 import os
+import sys
 import pandas as pd
+
+module_directory = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Models/Xrostomia_ML_Pipeline/WeeklyCTs_collection'
+sys.path.append(module_directory)
+
 import DataCollectionConfig as dcc
 
-class DataframeProcessor:
-
-    def __init__(self):
-        pass
+class DataframeProcessor():
     
     def get_merged_df(self, week_df, main_df):
         """
@@ -35,6 +39,23 @@ class DataframeProcessor:
                 df_final = df_final.reset_index().drop(columns=['index'])
                 return df_final
 
+            elif df_type == 'RTDose':
+                # Initialize an empty DataFrame
+                df = pd.DataFrame()
+
+                # Loop through each dictionary in the list
+                for item in group_list:
+                    # Extract the key (column name) and its corresponding dictionary
+                    for key, value in item.items():
+                        # Append the dictionary as a row to the DataFrame, specifying the index as the key
+                        df = df.append(pd.Series(value, name=key))
+
+                # Reset the index to ensure proper indexing
+                df = df.reset_index()
+                # Rename the 'index' column to 'Column_Name'
+                df = df.rename(columns={'index': 'OAR_num'}) 
+                return df
+                  
             else:
                 df_final = pd.DataFrame(group_list)
                 df_final = df_final.reset_index().drop(columns=['index'])

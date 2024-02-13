@@ -34,7 +34,6 @@ from PIL import Image, ImageDraw
 # Custom Modules
 import RadiomicsConfig as rc
 from ContourMaker import ContourMaker
-from NiftiFileMaker import NiftiFileMaker
 from ImageMatchChecker import ImageMatchChecker
 from WeeklyCTs_collection.ReaderWriter import Writer, Reader
 from WeeklyCTs_collection.ImageFeatureExtractor import ImageFeatureExtractor
@@ -53,11 +52,12 @@ class NiftiFileMaker():
         self.nifti_ct_output_path = rc.nifti_ct_output_path
         self.make_ct_nifti_contour = rc.make_ct_nifti_contour
         self.nifti_seg_output_path = rc.nifti_seg_output_path
-        self.inclusion_criteria_condition = rc.inclusion_criteria_condition
+        self.extra_folder_nifti_ct = rc.extra_folder_nifti_ct
+        self.inclusion_criteria_condition_ct = rc.inclusion_criteria_condition_ct
+        self.inclusion_criteria_condition_seg = rc.inclusion_criteria_condition_seg
 
         self.cm = ContourMaker()
         self.reader_obj = Reader()
-        self.nfm_obj = NiftiFileMaker()
         self.writer_obj = Writer('Excel')
         self.imc_obj = ImageMatchChecker()       
         self.ife_obj = ImageFeatureExtractor()
@@ -93,7 +93,7 @@ class NiftiFileMaker():
     def make_contour_nifti_file(self, filled_contours_dict, ct_image, patient_id):
 
         # Make folder for each patient in the defined path
-        nifti_patient_dir = self.nifti_seg_output_path + f'/{int(patient_id)}'
+        nifti_patient_dir = self.nifti_seg_output_path + f'/{patient_id}'
         self.writer_obj.directory_maker(nifti_patient_dir)
 
         # Sum the matrices to make a whole matrix
@@ -101,13 +101,13 @@ class NiftiFileMaker():
         final_matrix = np.sum(matrices_list, axis=0)
 
         # Save all the OARs in one mask
-        self.save_nifti_files('total', final_matrix, ct_image, nifti_patient_dir)
+        self.save_nifti_files('total', final_matrix, ct_image, nifti_patient_dir, patient_id)
 
         # Save each OAR seperately
         for key, value in filled_contours_dict.items():
             self.save_nifti_files(key, value, ct_image, nifti_patient_dir, patient_id)
 
-    def make_ct_nifti_file(self, dicom_im_dirs, patient_id):
+    def make_ct_nifti_file(self, subf, dicom_im_dirs, patient_id):
 
         # Make CT NIFTI file
         series_reader = sitk.ImageSeriesReader()
@@ -117,7 +117,16 @@ class NiftiFileMaker():
         dicom_files = series_reader.Execute()
 
         # Make a sitk writer
-        assistant_path = os.path.join(self.nifti_ct_output_path, patient_id)
+        # Slice the desire part of the directory to the NIFTI path
+        try:
+            extra_part = subf.split('\\')[self.extra_folder_nifti_ct]
+            if re.search(r'\b\d+\b', extra_part):
+                extra_part = subf.split('\\')[self.extra_folder_nifti_ct - 1]
+
+            assistant_path = os.path.join(self.nifti_ct_output_path, patient_id, extra_part)
+        except Exception:
+            assistant_path = os.path.join(self.nifti_ct_output_path, patient_id)
+
         self.writer_obj.directory_maker(assistant_path)
 
         nifti_writer = sitk.ImageFileWriter()
@@ -126,7 +135,7 @@ class NiftiFileMaker():
         # Convert the DICOM to nifti
         nifti_writer.Execute(dicom_files)
 
-    def save_match_ct(self, patient_id, contour_uid_list):
+    def save_match_ct(self, subf, patient_id, contour_uid_list):
         # Find the the CT scan that matches this contour 
         dicom_images, dicom_im_dirs, dicom_images_uid = \
         self.imc_obj.find_ct_match_contour(os.path.join(self.ct_path, patient_id) , contour_uid_list)
@@ -134,7 +143,7 @@ class NiftiFileMaker():
 
         # Make the CT NIFTI
         if self.make_ct_nifti_contour:
-            self.nfm_obj.make_ct_nifti_file(dicom_im_dirs, patient_id)
+            self.make_ct_nifti_file(subf, dicom_im_dirs, patient_id)
 
         return dicom_images, dicom_images_uid
 
@@ -142,10 +151,11 @@ class NiftiFileMaker():
 
         try:
             # Implement the inclusion criteria of the folders
-            if self.inclusion_criteria_condition:
+            if any(substring in subf.lower() for substring in self.inclusion_criteria_condition_seg):
                 directions = os.listdir(subf)
 
-                if '.dcm' in directions[0].lower():
+                if any('.dcm' in item.lower() for item in directions):
+
                     # Add the contour image to the IFE object
                     self.ife_obj.make_ct_image(subf)
                     patient_id = str(int(self.ife_obj.get_patient_id()))
@@ -155,7 +165,7 @@ class NiftiFileMaker():
                     filled_contours_dict = {}
 
                     # logger_obj.write_to_logger(f'Patient {patient_id} has started')
-
+                    print(f'Patient {patient_id} has started')
                     for counter, number in enumerate(number_list):
 
                         try:
@@ -166,7 +176,7 @@ class NiftiFileMaker():
 
                             # Only search for images once
                             if counter == 0:
-                                dicom_images, dicom_images_uid = self.save_match_ct(patient_id, contour_uid_list)
+                                dicom_images, dicom_images_uid = self.save_match_ct(subf, patient_id, contour_uid_list)
                             
                         except Exception as e:
                             print(patient_id, e)
@@ -174,13 +184,14 @@ class NiftiFileMaker():
 
                         # make continous hollow contour matrix
                         contour_matrix = self.cm.make_hollow_contour_matrix(contour_sequence, dicom_images, dicom_images_uid)
-
+      
                         # fill the hollow contour matrix
                         filled_matrix = self.cm.fill_contours(contour_matrix)
 
                         # Add each mask to the dictionary
                         filled_contours_dict[contour_name] = filled_matrix
                         # logger_obj.write_to_logger(f'{contour_name} matrix has been made')
+                        print(f'{contour_name} matrix has been made')
                     return filled_contours_dict, dicom_images[0], str(int(patient_id))
     
         except Exception as e:
@@ -192,13 +203,16 @@ class NiftiFileMaker():
         # Loop through all the DLCs
         for r, d, f in os.walk(self.seg_path):
             subfolders = [os.path.join(r, folder) for folder in d]
+            try:
+                for subf in subfolders:
+                    filled_contours_dict, dicom_image, patient_id = self.process_patient_folder(subf)
 
-        for subf in subfolders:
-            filled_contours_dict, dicom_image, patient_id = self.process_patient_folder(subf)
-            if filled_contours_dict is not None:
-                self.make_contour_nifti_file(filled_contours_dict, dicom_image, patient_id)
-            else:
-                print(f'Warning: contour NIFTI ia not made for {patient_id} ')
+                    if filled_contours_dict is not None:
+                        self.make_contour_nifti_file(filled_contours_dict, dicom_image, patient_id)
+                    else:
+                        print(f'Warning: contour NIFTI ia not made for {patient_id} ')
+            except Exception:
+                pass
 
     def make_ct_nifti_main(self):
 
@@ -206,16 +220,18 @@ class NiftiFileMaker():
 
             # make a list from all the directories 
             subfolders = [os.path.join(r, folder) for folder in d]
-    
+            # print(subfolders)
             for subf in subfolders:
 
-                if self.inclusion_criteria_condition:
+                if any(substring in subf.lower() for substring in self.inclusion_criteria_condition_ct):
 
                     try:
-                        self.ife_obj.make_ct_image(os.path.join(subf))
-                        patient_id = str(int(self.ife_obj.get_patient_id()))
-                        dicom_im_dirs =self.reader_obj.order_dicom_direction(subf)
-                        self.nfm_obj.make_ct_nifti_file(dicom_im_dirs, patient_id)
+                        directions = os.listdir(subf)
+                        if any('.dcm' in item.lower() for item in directions):
+                            self.ife_obj.make_ct_image(os.path.join(subf))
+                            patient_id = str(int(self.ife_obj.get_patient_id()))
+                            dicom_im_dirs =self.reader_obj.order_dicom_direction(subf)
+                            self.make_ct_nifti_file(subf, dicom_im_dirs, patient_id)
 
                     except Exception as e:
                         print(subf, e)

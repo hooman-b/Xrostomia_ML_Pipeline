@@ -9,6 +9,7 @@ Last Revised:...
 # General Libraries
 import os
 import re
+import sys
 import glob
 import math
 import shutil
@@ -31,12 +32,15 @@ from PIL import Image, ImageDraw
 from radiomics import featureextractor
 from dicompylercore import dicomparser, dvh, dvhcalc
 
+module_directory = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Models/Xrostomia_ML_Pipeline'
+sys.path.append(module_directory)
+
 # Custom Modules
 import RadiomicsConfig as rc
 from ContourMaker import ContourMaker
 from NiftiFileMaker import NiftiFileMaker
 from ImageMatchChecker import ImageMatchChecker
-from WeeklyCTs_collection import DataframeProcessor
+from WeeklyCTs_collection.DataframeProcessor import DataframeProcessor
 from WeeklyCTs_collection.ReaderWriter import Writer, Reader
 from WeeklyCTs_collection.ImageFeatureExtractor import ImageFeatureExtractor
 
@@ -46,10 +50,11 @@ class RtDoseCalculator():
     def __init__(self):
         self.seg_path = rc.seg_path
         self.oar_names = rc.oar_names
+        self.rtdose_path = rc.rtdose_path
         self.rtdose_df_name = rc.rtdose_df_name
         self.rtdose_df_path = rc.rtdose_df_path
         self.rtdose_oar_list = rc.rtdose_oar_list
-        self.rdose_folder_condition = rc.rdose_folder_condition
+        self.inclusion_criteria_condition_seg = rc.inclusion_criteria_condition_seg
 
         self.writer_obj = Writer('Excel')
         self.dp_obj = DataframeProcessor()
@@ -98,9 +103,9 @@ class RtDoseCalculator():
         if any('.dcm' in item.lower() for item in directions):
             # Find the patient_id
             self.ife_obj.make_ct_image(subf)
-            patient_id = self.ife_obj.get_patient_id()
-
-            patient_rtdose_path = self.imc_obj.find_ct_match_contour(os.path.join(self.rtdose_path, patient_id))
+            patient_id = str(self.ife_obj.get_patient_id())
+            print(patient_id)
+            patient_rtdose_path = self.imc_obj.find_rtdose_match_contour(os.path.join(self.rtdose_path, patient_id))
             # print(patient_rtdose_path)
 
             for oar in self.rtdose_oar_list:
@@ -108,8 +113,8 @@ class RtDoseCalculator():
                 try:
                     dvh_data.append(self.get_dvh(os.path.join(subf, directions[0]), patient_rtdose_path, oar, patient_id))
                 except:
-                    print(f'failed !!! There is no {oar} RTDOSE value for {patient_id}')
-        
+                    print(f'Warning: There is no {oar} RTDOSE value for {patient_id}')
+
             print(f'Patient {patient_id} has been Done Successfully')
 
         return dvh_data
@@ -123,8 +128,8 @@ class RtDoseCalculator():
             subfolders = [os.path.join(r, folder) for folder in d]
 
             for subf in subfolders:
-                if self.rdose_folder_condition:
-                    dvhreord.append(self.process_patient_folder(subf))
-                
-        rtdose_df = self.dp_obj.make_dataframe(dvhreord)
+                if any(substring in subf.lower() for substring in self.inclusion_criteria_condition_seg):
+                    dvhreord.extend(self.process_patient_folder(subf))
+
+        rtdose_df = self.dp_obj.make_dataframe(dvhreord, 'RTDose')
         self.writer_obj.write_dataframe(self.seg_path, self.rtdose_df_name, rtdose_df, self.rtdose_df_path)    

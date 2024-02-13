@@ -9,6 +9,7 @@ Last Revised:...
 # General Libraries
 import os
 import re
+import sys
 import glob
 import math
 import shutil
@@ -29,6 +30,9 @@ import SimpleITK as sitk
 from radiomics import featureextractor
 from skimage.draw import polygon
 from PIL import Image, ImageDraw
+
+module_directory = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Models/Xrostomia_ML_Pipeline/'
+sys.path.append(module_directory)
 
 # Custom Modules
 import RadiomicsConfig as rc
@@ -82,22 +86,20 @@ class ContourMaker():
         x_coordinates = [float(coord) for coord in contour_data[0::3]]
         y_coordinates = [float(coord) for coord in contour_data[1::3]]
         z_coordinates = [float(coord) for coord in contour_data[2::3]]
-
+        
         # Iterate through the dimensions
         for x, y, z in zip(x_coordinates, y_coordinates, z_coordinates):
 
             # Convert world coordinates to pixel coordinates
             y_pixel = int((x - image_position[0]) / pixel_spacing[0])
             x_pixel = int((y - image_position[1]) / pixel_spacing[1])
-            z_pixel = int((z - image_position[2]) / pixel_spacing[2])
 
             binary_masks[contour_uid][x_pixel , y_pixel] = 1
 
             x_pixel_list.append(x_pixel)
             y_pixel_list.append(y_pixel)
-            z_pixel_list.append(z_pixel)
-
-            return x_pixel_list, y_pixel_list, z_pixel_list
+            
+        return x_pixel_list, y_pixel_list
 
     def make_hollow_contour_matrix(self, contour_sequence, dicom_images, dicom_images_uid):
 
@@ -120,14 +122,14 @@ class ContourMaker():
                 binary_masks[contour_uid] = np.zeros_like(self.ife_obj.image.pixel_array, dtype=np.uint8)
 
             # Calculate the real coordination of the pixels
-            x_pixel_list, y_pixel_list, z_pixel_list = self.calculate_pixel_coordination(contour_data, binary_masks, contour_uid)
-
+            x_pixel_list, y_pixel_list = self.calculate_pixel_coordination(contour_data, binary_masks, contour_uid)
+            
             # Add the continous new mask to the final dictionary
             if contour_uid in binary_mask_continous.keys():
                 binary_mask_continous[contour_uid] += self.make_continous_contour(binary_masks[contour_uid], y_pixel_list, x_pixel_list)
             else:
                 binary_mask_continous[contour_uid] = self.make_continous_contour(binary_masks[contour_uid], y_pixel_list, x_pixel_list)
-
+            
             assigned_index = dicom_images_uid.index(contour_uid)
             contour_matrix[assigned_index,:,:] = binary_mask_continous[contour_uid]
         
@@ -152,6 +154,7 @@ class ContourMaker():
             # Convert the image to grayscale
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+            
             # Find contours in the grayscale image
             cnts = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             cnts = cnts[0] if len(cnts) == 2 else cnts[1]
@@ -164,5 +167,6 @@ class ContourMaker():
 
         # Convert the list of filled masks to a numpy array
         filled_matrix = np.array(filled_masks)
-
+        # Delete the image
+        self.writer_obj.delete_cv2_image(self.binary_mask_name)
         return filled_matrix

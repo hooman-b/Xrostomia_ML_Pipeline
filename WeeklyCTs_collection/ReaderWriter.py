@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from joblib import dump, load
 
 # Custom Modules
-import DataCollectionConfig as dcc
+# import DataCollectionConfig as dcc
 
 class Reader():
     # def read_general_dataframe_names(self, path):
@@ -170,6 +170,15 @@ class Writer():
         
         except Exception as e:
             print(f'Warning: {e} happend during saving cv2 image.')
+
+    def delete_cv2_image(self, name):
+
+        # Check if the file exists
+        if os.path.exists(name):
+            # Remove the file
+            os.remove(name)
+        else:
+            print(f"The image at {name} does not exist.")
 
     def write_dataframe(self, folder_path_name, file_name, dataframe, dst_path, excess=''):
         """
