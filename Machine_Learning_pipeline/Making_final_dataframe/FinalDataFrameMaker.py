@@ -18,14 +18,15 @@ User Specific:
 there is no need for any adjuctment. All the adjustments can be done in the configue file.
 
 """
-
-import pandas as pd
 import sys
+import pandas as pd
+from sklearn.model_selection import train_test_split
 
 module_directory = '//zkh/appdata/RTDicom/Projectline_HNC_modelling/Users/Hooman Bahrdo/Models/Xrostomia_ML_Pipeline/'
 sys.path.append(module_directory)
 
 import FinalDfConfig as fdc
+from LabelMaker import LabelMaker
 from DfCleaner import DfCleaner
 from WeeklyCTs_collection import ReaderWriter
 
@@ -45,8 +46,18 @@ class FinalDataFrameMaker():
         self.names_to_change_dict = fdc.names_to_change_dict
         self.column_names_to_drop = fdc.column_names_to_drop
         self.change_position_dict = fdc.change_position_dict
+        self.copy_column_dict = fdc.copy_column_dict
+        self.endpoint_list = fdc.endpoint_list
+        self.train_test = fdc.train_test
+        self.random_seed = fdc.random_seed
+        self.test_size = fdc.test_size
+        self.file_name_main = fdc.file_name_main
+        self.dst_path = fdc.dst_path
+        self.writer_type = fdc.writer_type
 
         self.reader_obj = ReaderWriter.Reader()
+        self.writer_obj = ReaderWriter.Writer(self.writer_type)
+        self.label_maker_obj = LabelMaker()
         self.DfCleaner_obj = DfCleaner(self.reader_obj, self.main_folder_dir)
     
     def make_initial_df(self):
@@ -67,6 +78,7 @@ class FinalDataFrameMaker():
         
         return raw_final_df
     
+
     def make_final_df(self):
         raw_df = self.make_initial_df()
         rf_files_names = list(self.rf_name_dict.keys())
@@ -74,14 +86,36 @@ class FinalDataFrameMaker():
         for number, feature in enumerate(self.rf_features[2:]):
             raw_df[f'Delta_{feature}_{rf_files_names[2*number+1]}'] = \
             (raw_df[f'{feature}_{rf_files_names[2*number+1]}'] - raw_df[f'{feature}_{rf_files_names[2*number]}']) / self.delta_num
-        final_df = self.DfCleaner_obj.clean_final_df(raw_df, self.names_to_change_dict,
-                                                      self.column_names_to_drop, self.change_position_dict)
+
+        final_df = self.DfCleaner_obj.clean_final_df(raw_df, self.names_to_change_dict, self.column_names_to_drop, 
+                                                     self.change_position_dict, self.copy_column_dict)
+        final_df = self.label_maker_obj.labelize_columns(final_df)
+        final_df = self.label_maker_obj.make_dummy_columns(final_df)
 
         return final_df
+    
+    def make_label_df(self):
+        final_df = self.make_final_df()
+
+        for endpoint in self.endpoint_list:
+            endpoint_df = final_df[~(final_df[endpoint].isna())]
+            endpoint_df = endpoint_df.reset_index().drop(columns=['index'])
+
+            if self.train_test:
+                X_train, X_test, y_train, y_test = train_test_split(endpoint_df, endpoint_df[endpoint],
+                                                                     test_size=self.test_size, random_state=self.random_seed)
+                endpoint_df['Split'] = ['train_val' if idd in list(X_train[self.id_column_name]) 
+                                        else 'test' for idd in endpoint_df[self.id_column_name]]
+                
+            self.writer_obj.write_dataframe('',f'{endpoint}_{self.file_name_main}', endpoint_df, self.dst_path)
+
+        self.writer_obj.write_dataframe('',f'Total_{self.file_name_main}', final_df, self.dst_path)
 
 if __name__== '__main__':
     dataframe_maker_obj = FinalDataFrameMaker()
     df = dataframe_maker_obj.make_final_df()
+    print(df)
+    dataframe_maker_obj.make_label_df()
 
 
 

@@ -117,7 +117,7 @@ class DfCleaner():
         
         return rf_df_dict
 
-    def clean_final_df(self, raw_df, names_to_change_dict, column_names_to_drop, change_position_dict):
+    def clean_final_df(self, raw_df, names_to_change_dict, column_names_to_drop, change_position_dict, copy_column_dict):
         
         # Change the names of the columns to the desired one.
         if len(names_to_change_dict) > 0:
@@ -129,5 +129,9 @@ class DfCleaner():
         if len(change_position_dict) > 0:
             for col_name, new_index in zip(change_position_dict['col_name'], change_position_dict['index']):
                 df.insert(new_index, col_name, df.pop(col_name))
+        
+        if len(copy_column_dict) > 0:
+            for new_name, col_name in copy_column_dict.items():
+                df[new_name] = df[col_name].copy()
 
         return df

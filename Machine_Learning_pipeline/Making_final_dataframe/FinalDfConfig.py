@@ -17,6 +17,9 @@ User Specific:
 5. NOTE: The irst TWO elements in 'dose_features' and 'rf_features' MUST be ID and OAR lists.
 6. NOTE: If you want to change the name of the columns in your dataset, assign values to 
  'names_to_change_dict'; otherwise, leave it empty.
+7. If one wants to labelize some of the columns, they can use 'labelize_dict'. Keys are names
+of the columns, and values are the method's name in LabelMaker class.
+8. One can add his/her method to LabelMaker class, it is hardcoding but it is OK :).
 """
 
 
@@ -60,3 +63,31 @@ column_names_to_drop = ['OAR_baseline_dlc', 'OAR_week3_dlc']
 # If you want to change the position of a column add index and column name elements; otherwise leave it empty.
 change_position_dict = {'index': [1],
                         'col_name': ['OAR']}
+
+# If you need to copy and add a column to the dataset, use the following{'new_name': 'column_name'}
+copy_column_dict = {'xer_bsl_citor': 'xer_bsl'}
+
+# The following is the dictionary that one can use to labelize some of the columns
+labelize_dict = {'xer_bsl': 'str_little_severe_label_maker',
+                 'xer_bsl_citor': 'str_moderate_severe_label_maker',
+                 'xer_wk1': 'str_moderate_severe_label_maker',
+                 'xer_06': 'str_endpoint_label_maker',
+                 'xer_12': 'str_endpoint_label_maker',
+                 'sex': 'str_sex_label_maker'}
+
+# The following dictionary is used when you want to make dummy column. NOTE: you MUST provide the name of the new columns.
+dummy_dict = {'xer_bsl_citor': ['xer_bsl_not_at_all', 'xer_bsl_little', 'xer_bsl_moderate_to_severe'],
+              'xer_wk1': ['xer_wk1_not_at_all', 'xer_wk1_little', 'xer_wk1_moderate_to_severe']}
+
+# List of available labels in the dataset
+endpoint_list = ['xer_06', 'xer_12']
+
+# parameters for making a new column that contains train-validation, test labels
+train_test = True
+random_seed = 42
+test_size = 0.2
+
+# Variables for saving the dataframes
+writer_type = 'Excel'
+file_name_main = 'final_df.xlsx'
+dst_path = 'C:/Users/BahrdoH/OneDrive - UMCG/Hooman/Models/Preprocessing/Delta_radiomics/Feature_extraction_factory/Radiomics_features/'
