@@ -49,7 +49,7 @@ class Reader():
 
         return desired_file_list
 
-    def read_dataframe(self, df_path, name):
+    def read_dataframe(self, df_path, name, drop_unnammed = True):
 
         try:
             # If the file is an excel file
@@ -65,7 +65,7 @@ class Reader():
                     df = pd.read_csv(os.path.join(df_path, name), sep=';')
 
             # Erase the index columns if there is any
-            if any('unnamed' in col_name.lower() for col_name in df.columns):
+            if any('unnamed' in col_name.lower() for col_name in df.columns) and drop_unnammed:
                 excess_column_names = [col_name for col_name in df.columns if 'unnamed' in col_name.lower()]
                 df = df.drop(columns=excess_column_names)
 
