@@ -1,5 +1,5 @@
 """
-Note: 
+NOTE: 
 This module make the final dataframe of this study. The user can change some items to make
 the dataframe. and all the components can be find in the FinalDfConfig.py file. 
 
