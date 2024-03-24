@@ -13,14 +13,31 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
-import StatisticalTestsConfig as stc
+
 
 class StatisticalPlots():
-    def __init__(self):
-        self.statistical_plot_dict = stc.statistical_plot_dict
     
-    def scatter_plot_maker(self, x_element_list, y_element_list, color_list, label_list, alpha_list,
-                            figure_dict, line=False, line_info = [], logistic=True):
+    def scatter_plot_input_processor(self, main_df, parameters_dict):
+        x_element_list = [main_df[col_name] for col_name in parameters_dict['x_element_list']]
+        y_element_list = [main_df[col_name] for col_name in parameters_dict['y_element_list']]
+        line_info = [[np.min(main_df[parameters_dict['line_info'][0]]) - parameters_dict['line_info'][1],
+                     np.max(main_df[parameters_dict['line_info'][0]]) + parameters_dict['line_info'][1]], 
+                    [np.min(main_df[parameters_dict['line_info'][0]]) - parameters_dict['line_info'][1], 
+                     np.max(main_df[parameters_dict['line_info'][0]]) + parameters_dict['line_info'][1]],
+                     parameters_dict['line_info'][3]]
+
+        return x_element_list, y_element_list, line_info
+
+    def scatter_plot_maker(self, main_df, parameters_dict):
+        
+        x_element_list, y_element_list, line_info = self.scatter_plot_input_processor(main_df, parameters_dict)
+        color_list = parameters_dict['color_list']
+        label_list = parameters_dict['label_list']
+        alpha_list = parameters_dict['alpha_list']
+        figure_dict = parameters_dict['figure_dict']
+        line = parameters_dict['line']
+        logistic = parameters_dict['logistic']
+
         fig, ax = plt.subplots(figsize=(10, 10))
 
         for counter, x_element in enumerate(x_element_list): 
@@ -57,7 +74,15 @@ class StatisticalPlots():
         return fig
 
 
-    def histogram_plot_maker(self, element_list, color_list, label_list, alpha_list, figure_dict):
+    def histogram_plot_maker(self, main_df, parameters_dict):
+
+        # Make the input elements
+        element_list = main_df[parameters_dict[element_list][0]]
+        color_list = parameters_dict[color_list]
+        label_list = parameters_dict[label_list]
+        alpha_list = parameters_dict[alpha_list]
+        figure_dict = parameters_dict[figure_dict]
+
         # Create a histogram
         fig, ax = plt.subplots(figsize=(10, 5))
         n, bins, patches = ax.hist(element_list[0], bins=30, color=color_list[0], density=True, edgecolor='black', alpha=0.7, label=label_list[0])
@@ -89,7 +114,9 @@ class StatisticalPlots():
 
         return fig
 
-    def violin_plot_maker(self, category_df):
+    def violin_plot_maker(self, main_df, parameters_dict):
+
+        category_df = main_df.loc[:,parameters_dict['element_list']]
 
         # Create a violin plot using Seaborn
         sns.set(style="whitegrid")
@@ -105,9 +132,12 @@ class StatisticalPlots():
         fig = plt.gcf()
         return fig
 
-    def heatmap_plot_maker(self, samples_df, title):
-        corre = samples_df.corr()
+    def heatmap_plot_maker(self, main_df, parameters_dict):
 
+        category_df = main_df.loc[:,parameters_dict['element_list']]
+        title = parameters_dict['title']
+
+        corre = category_df.corr()
 
         # Create a heatmap using seaborn
         plt.figure(figsize=(10, 8))

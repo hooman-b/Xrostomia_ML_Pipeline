@@ -199,3 +199,7 @@ class Writer():
         elif self.writer_type == 'CSV':
             # save the dataframe
             dataframe.to_csv(os.path.join(dst_path, f'{file_name}_{folder_name}.csv'), index=False)
+
+    def write_plt_images(self, image, path, name):
+        final_dir = self.directory_maker(os.path.join(path, name))
+        image.savefig(final_dir)
