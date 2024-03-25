@@ -7,6 +7,7 @@ Last Revised:...
 import os
 import re
 import cv2
+import joblib
 import shutil
 import pickle
 import numpy as np
@@ -203,3 +204,9 @@ class Writer():
     def write_plt_images(self, image, path, name):
         final_dir = self.directory_maker(os.path.join(path, name))
         image.savefig(final_dir)
+    
+    def write_ml_model(self, model, save_path, model_name):
+        final_dir = self.directory_maker(os.path.join(save_path, model_name))
+
+        # Save the model
+        joblib.dump(model, final_dir)
