@@ -7,25 +7,12 @@ Last Revised:...
 """
 
 # General Libraries
-import os
 import re
-import glob
-import math
-import shutil
 import numpy as np
 import pandas as pd
-from random import randint
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-from datetime import time, datetime, date
-
-# DICOM Libraries
-import pydicom as pdcm
-from pydicom.tag import Tag
 
 # Custom Modules
 import DataCollectionConfig as dcc
-
 
 
 class WeeklyctFeatureExtractor():
