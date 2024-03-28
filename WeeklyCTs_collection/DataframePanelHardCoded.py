@@ -602,7 +602,7 @@ class Dashboard:
         self.dashboard.show()
 
 
-class DashboardMaker():
+class DashboardMakerHardCoded():
 
     def __init__(self):
         self.css = dcc.css

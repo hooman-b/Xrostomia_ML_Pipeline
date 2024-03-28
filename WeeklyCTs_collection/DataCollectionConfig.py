@@ -17,6 +17,10 @@ NOTE: There are two versions for plotting phase, one version is hard-coded one (
       version that is the final version (DataframePannel) that every changes should be done inside the 
       config file based on the instructions.
 
+NOTE: The reason that I keep the hard-coded version is that I belieave, working with that can be easier
+      particularly for a person who knows python; however, if you do not have any python knowledge, just
+      use the soft-coded version (DataframePannel).
+
 """
 import pandas as pd
 
@@ -110,7 +114,8 @@ css = '''
 '''
 
 # The following dictionary of dictionaries contains all the pages and column names that one wants to involve
-# in the dashboard. One can add as many pages as she/he wants.
+# in the dashboard. One can add as many pages as she/he wants.NOTE: You MUST feel this dictionary if you are 
+# using soft-coded version.
 pages_dict = {
               {'title': 'Home', ### Page ONE ###
                'show_page': True,
@@ -187,4 +192,5 @@ transferor = True
 # Dashboard Switch: If you want to have a dashboard from WeeklyCT datasets (final and
 # based on labels), you can use this switch. you need to turn this switch ON (True); 
 # otherwise, it should be OFF (False). Make sure you make the final WeeklyCT dfs first.
-dashboard = False
+dashboard_hardcoded = False # This one is the hardcoded version of the dahboard
+dashboard_softcoded = False # This one is the softcoded version of the dahboard

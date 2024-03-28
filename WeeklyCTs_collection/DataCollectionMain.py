@@ -1,5 +1,8 @@
 """
 Explanation: In this main file all the phases will be put together to make a whole pipeline.
+
+Author: Hooman Bahrdo
+Last Revised: 3/28/2024
 """
 
 # Custom Modules
@@ -11,7 +14,9 @@ from DataframePanel import DashboardMaker
 from DataframeProcessor import DataframeProcessor
 from WeeklyctTransferor import TransferringWeeklycts
 from WeeklyctDataframeMaker import WeeklyctDataframeMaker
+from DataframePanelHardCoded import DashboardMakerHardCoded
 from WeeklyctFeatureExtractor import WeeklyctFeatureExtractor 
+
 
 class Main():
     """
@@ -52,8 +57,13 @@ class Main():
         if dcc.transferor:
             transferring_obj.transfering_weeklycts()
         
-        # Plotting phase by using a dashboard
-        if dcc.dashboard:
+        # Plotting phase by using a dashboard (Hard-coded version)
+        if dcc.dashboard_hardcoded:
+            dashboard_obj = DashboardMakerHardCoded()
+            dashboard_obj.make_dashboard()
+
+        # Plotting phase by using a dashboard (Hard-coded version)
+        if dcc.dashboard_softcoded:
             dashboard_obj = DashboardMaker()
             dashboard_obj.make_dashboard()
 
