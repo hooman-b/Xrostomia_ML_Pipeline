@@ -32,6 +32,7 @@ min_slice_num = 50 # Minum number of slides per folder
 modality = 'CT' # Desired modality
 writer_type = 'Excel' # This determines the typr os savinh files ('Excel', 'CSV')
 image_read_mode = 'Navigation'
+common_initial_name = 'general'
 
 # Make WeeklyCT Dataframe Phase
 save_individual_weeklyct_df = True # Whether you want to save an individual dataframe or not
@@ -74,7 +75,7 @@ week_list = list(fraction_range_dict.keys())
 transferring_file_name = 'Transferring_information'
 final_weeklyct_name = 'WeeklyCT_dataframe_final.xlsx'
 transferring_filename_excess = ''
-
+common_transfer_name = 'transfer'
 
 # Dashboard phase
 # CSS styling

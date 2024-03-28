@@ -38,6 +38,8 @@ class WeeklyctDataframeMaker():
                 11. desired_file (str): The name of the file that one wants to find and make 
                     the final df from.
                 12. common_col (str): This is a string used to merge dataframes based on it.
+                13. common_initial_name (str): This is a common part in the name of all the
+                    initial dfs.
 
     Methods: 1. make_a_week_df: Creates a dataframe for a specific week.
              2. make_weeklyct_df: Finds weekly CTs and drops other types of CTs.
@@ -50,8 +52,10 @@ class WeeklyctDataframeMaker():
         self.desired_file = dcc.desired_file
         self.general_df_path = dcc.general_df_path
         self.weeklyct_df_path = dcc.weeklyct_df_path
-        self.save_individual_df = dcc.save_individual_weeklyct_df
         self.weeklyct_file_name = dcc.weeklyct_file_name
+        self.common_initial_name =dcc.common_initial_name
+        self.save_individual_df = dcc.save_individual_weeklyct_df
+
 
         self.wfe_obj = wfe_obj
         self.log_obj = log_obj
@@ -119,7 +123,7 @@ class WeeklyctDataframeMaker():
         """        
         # Find the name of the general files
         self.log_obj.write_to_logger(f'Looking for preliminary datframe names has been started')  
-        general_dfs_names = self.reader_obj.raed_dataframe_names(self.general_df_path, 'general')
+        general_dfs_names = self.reader_obj.raed_dataframe_names(self.general_df_path, self.common_initial_name)
         self.log_obj.write_to_logger(f'Following dataframes have been found: {general_dfs_names}')
 
         # Loop through the names make weeklyCT df based on that and save it.
