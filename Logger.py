@@ -1,7 +1,7 @@
 # Using our STEM_EDX_Pipeline logging code
 import logging
 
-class log():
+class Log():
     """
     Type: Create a log file to record information about processes and errors.
     Explanation: This class provides methods to write information and errors to a 

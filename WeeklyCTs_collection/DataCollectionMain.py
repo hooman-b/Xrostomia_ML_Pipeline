@@ -1,7 +1,9 @@
 """
 Explanation: In this main file all the phases will be put together to make a whole pipeline.
 """
+
 # Custom Modules
+from Logger import Log
 from Navigator import Navigator
 import DataCollectionConfig as dcc
 from ReaderWriter import Reader, Writer
@@ -17,18 +19,19 @@ class Main():
     """
     def main_pipeline(self):
         """
-        Executes the data processing pipeline based on configurations.
+        Executes the DataCollection pipeline based on configurations.
         """
 
         # Make objects from supplying class
         reader_obj = Reader()
+        log_obj = Log('Data_collection.log')
         writer_obj = Writer(dcc.writer_type)
         df_processor_obj = DataframeProcessor()
         wfe_obj = WeeklyctFeatureExtractor() # Use abbreviation
 
         # Navigator phase
-        if dcc.navigator_switch:
-            navigator_obj = Navigator(df_processor_obj, writer_obj)
+        if dcc.navigator_switch:  
+            navigator_obj = Navigator(df_processor_obj, writer_obj, log_obj)
             navigator_obj.make_image_feature_dfs()
 
         # Weeklyct Dataframe creation phase        

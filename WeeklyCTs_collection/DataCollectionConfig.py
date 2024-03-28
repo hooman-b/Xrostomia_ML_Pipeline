@@ -7,14 +7,7 @@ User Specific:
 the parameters in this section should be adjusted by users.
 
 """
-
-import os
-import sys
-import math
 import pandas as pd
-from datetime import datetime
-from itertools import chain, combinations
-
 
 # Paths
 # navigation_path can be a list of paths that user wants to search for WeeklyCTs

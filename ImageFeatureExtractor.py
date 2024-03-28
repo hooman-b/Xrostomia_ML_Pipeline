@@ -6,9 +6,8 @@ the images can be any kind e.g. CT, MRI, and PET.
 Author: Hooman Bahrdo
 Last Revised:...
 """
-# Import Libraries
+
 # General Libraries
-import os
 import re
 import glob
 import SimpleITK as sitk
