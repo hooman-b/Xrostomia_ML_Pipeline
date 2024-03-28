@@ -46,17 +46,16 @@ time_limit = pd.Timestamp('2014-01-01') # the threshold time (all the images bef
 min_slice_num = 50 # Minum number of slides per folder
 modality = 'CT' # Desired modality
 writer_type = 'Excel' # This determines the typr os savinh files ('Excel', 'CSV')
-image_read_mode = 'Navigation'
-common_initial_name = 'general'
+common_initial_name = 'general' # Common part in the name of initial dataframes
 
 # Make WeeklyCT Dataframe Phase
 save_individual_weeklyct_df = True # Whether you want to save an individual dataframe or not
 weeklyct_file_name = 'WeeklyCT_dataframe'
 make_label_df = True # If you want weeklyCT df based on each folder change this True
 label_list = ['xer_06', 'xer_12'] # If the above is false, this program does not count this one
-weeklyct_final_df_name = 'final'
-desired_file = 'weeklyct'
-common_col = 'ID'
+weeklyct_final_df_name = 'final' # Excess part of the final weeklyCT df
+desired_file = 'weeklyct' # Key word to help the program can find relevant dataframes
+common_col = 'ID' # Column that merging happens based on it
 
 # Clinical df
 clinical_df_name = 'Xerostomia_dataset.xlsx' # CONFIG File

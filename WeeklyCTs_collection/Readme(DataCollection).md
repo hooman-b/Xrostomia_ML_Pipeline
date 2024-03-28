@@ -1,32 +1,13 @@
 # Data Collection Phase
-### Pipeline Application
+## Pipeline Application
 This pipeline can be used for finding WeeklyCTs in different folders, Making dataframe from their properties, and transferring them to a destination folder. However, one can use Navigator, WeeklyTransferring modules for other types of the images such as other types of CTs, MRI, and PET scans. 
 
 ## Pipeline Sections
 In this section, I will describe different sections of the DataCollection pipeline, and I will mention some of the properties of the modules. For more information, one can have a look at each module seperately.
 
 ### **Navigation Phase**
-In this phase, the desired paths, in which the user wants to find a specific kind of image such as weeklyCTs, are navigated. Then, dataframes, one dataframe for each directory that contains all the basic necessary information, are created and saved in the destination directory. This phase is implemented through the 'Navigator' module, which contains the Navigator class. A set of controlling keys is available in the 'DataCollectionConfig' file that one can adjust the program for the desired files.
+In this phase, the desired paths, in which the user wants to find a specific kind of image such as weeklyCTs, are navigated. Then, dataframes, one dataframe for each directory that contains all the basic necessary information, are created and saved in the destination directory. This phase is implemented through the 'Navigator' module, which contains the Navigator class. The Navigator class contains eleven attributes and three methods. The methods are responsible for finding the desired images in the folders and calling 'get_image_information' function in ImageFeatureExtractor class to extract some of the features of the mentioned images. The featurs are 'patient_id', 'folder_name', 'date', 'week_day', 'week_num', 'info_header', 'fraction', 'HD_FoV', 'slice_thickness', 'num_slices', 'pixel_spacing', 'contrast', 'UID' and 'path'. Moreover, A set of controlling keys is available in the 'DataCollectionConfig' file that one can adjust the program for the desired files. The keys are centered around the types of the images, number of slides, date of making them, and the ame of produced dataframes. More information about the keys can be found in DataCollectionConfig.
 
-#### **Navigator Class**
+### **Make WeeklyCT Dataframe Phase**
+In this phase, based on the initial dataframes made in the privious phase (Navigation Phase), new dataframes just for the weeklyCTs are made, each dataframe is based on its initial df counterpart, and then a final weeklyCT dataframe, which is a concatanation of all the individual weeklyCT dfs, is made. For this purpose,  'WeeklyctDataframeMaker' and 'WeeklyctFeatureExtractor' modules has been used. 'WeeklyctDataframeMaker' module contains 'WeeklyctDataframeMaker' class that is responsible for creating, managing and merging weekly CT dataframes. Moreover, 'WeeklyctFeatureExtractor' module contains 'WeeklyctFeatureExtractor' class that contains functions to extract features from weekly CT data. The final dataframe consists of 'patient_id', 'RTSTART_date', 'Sessions_dates', 'Fraction_values', 'First_day', 'Number_of_CTs', 'Number_of_weeklyCTs'and 'modality_adjusted' columns. Furthermore, a set of control keys are available in DataCollectionConfig for this phase that can be used for saving dataframes, determining the labels, controlling the merging and saving processes. More information about the keys can be found in the classes and the config file.
 
-This class searches multiple folders to find a specific type of images.
-
-**Attributes:**
-
-1. df_processor_obj: An object of the DataFrame processor class.
-2. writer_obj: An object of the writer class for writing dataframes.
-3. log_obj: An object of the logger class for logging events.
-4. navigation_paths (list): List of paths to navigate through.
-5. navigation_file_name (str): Name of the navigation file.
-6. min_slice_num (int): Minimum number of slices.
-7. modality (str): Modality of the images.
-8. time_limit (timestamp): Time limit for navigation like pd.Timestamp('2014-01-01'). 
-9. general_df_path (str): Path to the general DataFrame.
-10. exclusion_set (set): Set of keywords to exclude.
-
-**Methods:**
-
-1. _extract_image_information: Extracts information from images in subfolders.
-2. navigate_folder: Navigates through the specified folder.
-3. make_image_feature_dfs: Makes dataframe based on available images.
