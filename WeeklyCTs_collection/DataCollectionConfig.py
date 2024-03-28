@@ -5,6 +5,17 @@ the constants and also parameters that should be changed by users
 
 User Specific:
 the parameters in this section should be adjusted by users.
+NOTE: For using the dashboard, one should determine all the input parameters of each page.
+      Each page MUST have a title and a show_page boolian, and then other contents can be 
+      added freely inside the page. This dashboard considers texts and barcharts related to 
+      the clinical aspects and information about weeklCT scans, so for any improve ment like
+      adding other types of plots, or other parameters that this program does NOT support, 
+      one can add a new module, and link it to the dashboard and the config file.
+
+NOTE: There are two versions for plotting phase, one version is hard-coded one (DataframePannelHardcoded)
+      that one needs to change all the parameters inside the classes (that can be easier). Also, another
+      version that is the final version (DataframePannel) that every changes should be done inside the 
+      config file based on the instructions.
 
 """
 import pandas as pd
@@ -78,6 +89,12 @@ transferring_filename_excess = ''
 common_transfer_name = 'transfer'
 
 # Dashboard phase
+# The general title
+title = 'Dataset'
+
+# Header color
+header_color = '#00C5CD'
+
 # CSS styling
 css = '''
 .sidebar_button .bk-btn-group button {
@@ -92,6 +109,49 @@ css = '''
 }
 '''
 
+# The following dictionary of dictionaries contains all the pages and column names that one wants to involve
+# in the dashboard. One can add as many pages as she/he wants.
+pages_dict = {
+              {'title': 'Home', ### Page ONE ###
+               'show_page': True,
+               'text': """
+                        ## **Introduction**
+                        This panel is made to explain some of the features of the dataset used in my research.
+                        It contains one main dataset contains **455** parients. The patients in this dataset can have
+                        12- or 6- month endpoint for xerostomia. Moreover, 12 month dataset is a subset of the main
+                        dataset that contains **345** patients whose patients only have 12-month endpoint for xerostomia.
+                        The patients in the mentioned dataset can have endpoint for 6-month xerostomia. Moreover, the 6-month
+                        dataset (contains **418** patients) only contains the patients with 6-month xerostomia endpoint who can have
+                        12-month xerostomia endpoint. Finally, 12-6 month dataset (with **310** patients) contains the patients who
+                        have both of the endpoints.
+                        """},
+              {'title': 'Total Datset', ### Page TWO ###
+               'show_page': False,
+               'text':  """
+                        ## Explanation
+                        This dataset contains **455** patients from which **345** patients have 12-month xerostimia endpoint, and **418** patients have
+                        6-month xerostomia endpoint. The extra columns in this bar plot refers to the number of patient who are diagnosed with
+                        positive and negative xerostomia 6 months and 12 months after irradiation.
+                        """,
+                'file_name': 'Overview_weeklyCT_patients.xlsx',
+                'column_names': ['Year', 'First_day', 'Number_of_weeklyCTs', 'modality_adjusted', 'Count_of_weeks',
+                            'gender', 'tumor_location', 'age', 'n_stage', 't_stage','xer_06', 'xer_12'],
+                'starting_graph': 'Year'
+                },
+              {'title': '6 month Dataset', ### Page Third ###
+               'show_page': False,
+               'text':  """
+                        ## Explanation
+                        This dataset contains **455** patients from which **345** patients have 12-month xerostimia endpoint, and **418** patients have
+                        6-month xerostomia endpoint. The extra columns in this bar plot refers to the number of patient who are diagnosed with
+                        positive and negative xerostomia 6 months and 12 months after irradiation.
+                                 """,
+                'file_name': 'Overview_weeklyCT_patients_6month.xlsx',
+                'column_names': ['Year', 'First_day', 'Number_of_weeklyCTs', 'modality_adjusted', 'Count_of_weeks',
+                            'gender', 'tumor_location', 'age', 'n_stage', 't_stage'],
+                'starting_graph': 'Year'
+                }
+                }
 
 #    ######### Contorl Room :)))) #########
 # Here you have access to different switches that can be turned on or off

@@ -23,22 +23,6 @@ from bokeh.plotting import ColumnDataSource
 import DataCollectionConfig as dcc
 
 class BarChart:
-    """
-    Explanation: The BarChart class provides functionality for creating interactive bar charts based on 
-                 a DataFrame. It allows users to select parameters and items of interest, updating the 
-                 choices dynamically. Key methods include bar_chart_panel_maker, which assembles the 
-                 interactive panel, and render_plot, which generates the bar plot based on the selected 
-                 parameters. Static methods map elements to specific categories such as age groups, days of 
-                 the week, and xerostomia labels. Overall, this class offers a comprehensive tool for visualizing 
-                 and analyzing data using interactive bar charts.
-
-    Attributes: 1. df (DataFrame): the input dataframe used for plotting
-                2. columns_names (list): List of columns that we want a plot based on that
-                3. param: The first columns tha should be shown for the first time.
-    
-    Methods: 1. This calss has 11 instance methods used to make the plots for each column names.
-             2. Rhis class has 6 static methods used in cleaning and calculating the label. 
-    """
     def __init__(self, df, columns_names, param):
         self.df = df
         self.columns_names = columns_names
@@ -145,7 +129,6 @@ class BarChart:
         fig.vbar(x=xaxis, top=yaxis, width=0.8, color='#EE8262')
 
         return fig
-
 
     def fig_maker(self, parameter, source, xaxis):
         """
@@ -453,6 +436,88 @@ class BarChart:
 
             if individual_trend[0] == key[0] and individual_trend[1] == key[1]:
                 return trend_conditions_dict[key]
+            
+
+class TextPresentor():
+
+    def text_home(self):
+        text = pn.pane.Markdown("""
+                                ## **Introduction**
+                                This panel is made to explain some of the features of the dataset used in my research.
+                                It contains one main dataset contains **455** parients. The patients in this dataset can have
+                                12- or 6- month endpoint for xerostomia. Moreover, 12 month dataset is a subset of the main
+                                dataset that contains **345** patients whose patients only have 12-month endpoint for xerostomia.
+                                The patients in the mentioned dataset can have endpoint for 6-month xerostomia. Moreover, the 6-month
+                                dataset (contains **418** patients) only contains the patients with 6-month xerostomia endpoint who can have
+                                12-month xerostomia endpoint. Finally, 12-6 month dataset (with **310** patients) contains the patients who
+                                have both of the endpoints.  
+
+                                ## **Features**
+                                The following features are evaluated in this panel:
+
+                                1. **Year**: This bar chart contains the number of patients based on the RT start year.
+
+                                2. **First_day**: This bar chart contains the number of patients based on the RT start weekday. 
+
+                                3. **Number_of_weeklyCTs**: This bar chart investigates for each number of weekly CTs how many patients we have.
+
+                                4. **Modality_adjustment**: This bar chart depicts the number of patients with different treatment approaches in each dataset.
+
+                                5. **Count_of_weeks**: This bar chart evaluate how many patient we have for each week CT.
+
+                                6. **sex**: This bar chart shows the distribution of gender for each cohort.
+
+                                7. **tumor_location**: This bar chart presents the distribution of different tumor locations in each dataset.
+
+                                8. **age**: This bar chart shows the distribution of patients in different age groups in each dataset.
+
+                                9. **n_stage**: This bar chart shows the distribution of different stages of the number of lymph nodes involved in cancer.
+
+                                10. **t_stage**: This bar chart shows the distribution of different stages of the cancer.
+
+                                11. **xer_06**: This bar chart depicts the number of patients with positive, negative and even without 6-month xerostomia label.
+
+                                12. **xer_12**: This bar chart depicts the number of patients with positive, negative and even without 12-month xerostomia label.
+                                
+                                13. **xer_trend**: This bar chart presents the trend of the side effect in each patient from 6-month endpoint to 12-month endpoint.
+                                """)
+        return text
+
+    def text_total(self):
+        text = pn.pane.Markdown("""
+                                 ## Explanation
+                                 This dataset contains **455** patients from which **345** patients have 12-month xerostimia endpoint, and **418** patients have
+                                 6-month xerostomia endpoint. The extra columns in this bar plot refers to the number of patient who are diagnosed with
+                                 positive and negative xerostomia 6 months and 12 months after irradiation.
+                                 """)
+        return text 
+
+    def text_12month(self):
+        text = pn.pane.Markdown("""
+                                ## Explanation
+                                This dataset contains **345** patients with 12-month xerostimia endpoint. The most important bar chart for this dataset is **Count_of_weeks**
+                                since it contains the number of available weekly CTs per week that can be used as an estimation of the number of samples in the dataset to
+                                train the model.
+                                 """)
+        return text 
+
+    def text_6month(self):
+        text = pn.pane.Markdown("""
+                                ## Explanation
+                                This dataset contains **418** patients with 6-month xerostimia endpoint. This dataset is larger than 6-month dataset, and can be a good starting
+                                dataset for training different models.The most important bar chart for this dataset is **Count_of_weeks** since it contains the number of available
+                                weekly CTs per week that can be used as an estimation of the number of samples in the dataset to train the model.
+                                 """)
+        return text
+    
+    def text_12_6_month(self):
+        text = pn.pane.Markdown("""
+                                ## Explanation
+                                This dataset contains **310** patients with available 6-month and 12-month xerostimia endpoints, which is the smallest dataset. The most important
+                                feature of this dataset is **xer_trend** bar chart since it depicts the trend ofxerostomia in the patients who have both xerostomia endpoints. As it
+                                was expected, the number of negative labels are more than positive labels in this dataset.
+                                 """)
+        return text 
 
 
 class Dashboard:
@@ -531,12 +596,6 @@ class Dashboard:
         self.main_page.append(pn.pane.Markdown(f'# {title}'))
         self.main_page.extend([item for item in self.pages[title]])
             
-    def text_productor(self, input_text):
-        """
-        Explanation: Returns the text for a page 
-        """
-        text = pn.pane.Markdown(input_text)
-        return text
             
     def show(self):
         '''Shows the dashboard''' 
@@ -544,55 +603,85 @@ class Dashboard:
 
 
 class DashboardMaker():
-    """
-    Explanation: is responsible for creating a dashboard based on predefined parameters and datasets.
 
-    Attributes: 1. css (str): Path to the CSS file for styling the dashboard.
-                2. title (str): Title of the dashboard.
-                3. pages_dict (dict of dicts): Dictionary containing dictionaries describing each page of
-                   the dashboard.
-                4. header_color (str): Color code for the dashboard header.
-                5. dashboard_df_path (str): Path to the directory containing datasets for the dashboard.
-
-    Methods: 1. make_dashboard(): Generates the dashboard based on the provided parameters and datasets.
-    """
     def __init__(self):
         self.css = dcc.css
         self.title = dcc.title
-        self.pages_dict = dcc.pages_dict
         self.header_color = dcc.header_color
         self.dashboard_df_path = dcc.dashboard_df_path
 
     def make_dashboard(self):
-        """
-        Explanation: Creates the dashboard by iterating through the provided pages and adding
-                     them to the dashboard object.
-        """
+
         # Change direction to the datasets
         os.chdir(self.dashboard_df_path)
+
+        # Text
+        text_obj = TextPresentor()
+        home_text = text_obj.text_home()
+        total_text = text_obj.text_total()
+        twelve_text = text_obj.text_12month()
+        six_text = text_obj.text_6month()
+        twelve_six_text = text_obj.text_12_6_month()
 
         # Initialize the Dashboard
         dataset_db = Dashboard(self.title, self.header_color, self.css)
 
-        # Loop through the pages, make and add them to the dashboard.
-        for page_dict in self.pages_dict:
-            page_text = dataset_db.text_productor(page_dict['text'])
+        # Home page
+        dataset_db.add_page('Home', True, home_text)
 
-            # Check whether this page has any barplot to sketch
-            if 'file_name' in list(page_dict.keys()):
+        ## Total Dataset page
+        # Assign the total dataset and desired columns
+        total_df = pd.read_excel('Overview_weeklyCT_patients.xlsx').drop(columns=['Unnamed: 0'])
+        column_names_total = ['Year', 'First_day', 'Number_of_weeklyCTs', 'modality_adjusted', 'Count_of_weeks',
+                            'gender', 'tumor_location', 'age', 'n_stage', 't_stage','xer_06', 'xer_12']
 
-                # Read the df
-                df = pd.read_excel(page_dict['file_name'])
+        # Make the barplot for this dataset
+        bar_plot_total_obj = BarChart(total_df, column_names_total, 'Year')
+        bar_plot_total = bar_plot_total_obj.bar_chart_panel_maker()
 
-                # Make the barplot for this dataset
-                bar_plot_obj = BarChart(df, page_dict['column_names'], page_dict['starting_graph'])
-                bar_plot = bar_plot_obj.bar_chart_panel_maker()
+        # Add total dataset page to the panel
+        dataset_db.add_page('Total Datset', False, bar_plot_total, total_text)
 
-                # Add total dataset page to the panel
-                dataset_db.add_page(page_dict['title'], page_dict['show_page'], bar_plot, page_text)
 
-            else:
-                dataset_db.add_page(page_dict['title'], page_dict['show_page'], page_text)
+        ## 6month Dataset page
+        # Assign the total dataset and desired columns
+        six_month_df = pd.read_excel('Overview_weeklyCT_patients_6month.xlsx').drop(columns=['Unnamed: 0'])
+        column_names_6month = ['Year', 'First_day', 'Number_of_weeklyCTs', 'modality_adjusted', 'Count_of_weeks',
+                            'gender', 'tumor_location', 'age', 'n_stage', 't_stage']
+
+        # Make the barplot for this dataset
+        bar_plot_6month_obj = BarChart(six_month_df, column_names_6month, 'Year')
+        bar_plot_6month = bar_plot_6month_obj.bar_chart_panel_maker()
+
+        # Add 6month dataset page to the panel
+        dataset_db.add_page('6 month Dataset', False, bar_plot_6month, six_text)
+
+        ## 12month Dataset page
+        # Assign the total dataset and desired columns
+        twelve_month_df = pd.read_excel('Overview_weeklyCT_patients_12month.xlsx').drop(columns=['Unnamed: 0'])
+        column_names_12month = ['Year', 'First_day', 'Number_of_weeklyCTs', 'modality_adjusted', 'Count_of_weeks',
+                            'gender', 'tumor_location', 'age', 'n_stage', 't_stage']
+
+        # Make the barplot for this dataset
+        bar_plot_12month_obj = BarChart(twelve_month_df, column_names_12month, 'Year')
+        bar_plot_12month = bar_plot_12month_obj.bar_chart_panel_maker()
+
+        # Add 12month dataset page to the panel
+        dataset_db.add_page('12 Month Dataset', False, bar_plot_12month, twelve_text)
+
+        ## 12- and 6- month Dataset page
+        # Assign the total dataset and desired columns
+        twelve_six_month_df = pd.read_excel('Overview_weeklyCT_patients_12_6_month.xlsx').drop(columns=['Unnamed: 0'])
+        column_names_12_6_month = ['Year', 'First_day', 'Number_of_weeklyCTs', 'modality_adjusted', 'Count_of_weeks',
+                            'gender', 'tumor_location', 'age', 'n_stage', 't_stage', 'xer_trend']
+
+        # Make the barplot for this dataset
+        bar_plot_12_6_month_obj = BarChart(twelve_six_month_df, column_names_12_6_month, 'Year')
+        bar_plot_12_6_month = bar_plot_12_6_month_obj.bar_chart_panel_maker()
+
+        # Add 12-6month dataset page to the panel
+        dataset_db.add_page('12-6 Month Dataset', False, bar_plot_12_6_month, twelve_six_text)
+
 
         dataset_db.show()
 

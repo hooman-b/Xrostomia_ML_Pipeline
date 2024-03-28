@@ -3,7 +3,7 @@ Explanation: This module contains  making the transferring Dataframe, and also u
 the dataframe to transfer CTs to the destination folder.
 
 Author: Hooman Bahrdo
-Last Revised:...
+Last Revised: 3/28/2024
 """
 # General Libraries
 import os
@@ -58,6 +58,7 @@ class TransferringWeeklycts():
 
     def make_transferring_df(self):
         """
+        Type: instance method
         Explanation: Creates the transferring dataFrame from initial general datframes.
         """
 
@@ -79,6 +80,7 @@ class TransferringWeeklycts():
 
     def transfering_weeklycts(self):
         """
+        Type: instance method
         Explanation: Transfers weekly CT scans to the destination folder from all the input folders.
         """
         try:
@@ -128,9 +130,8 @@ class TransferringWeeklycts():
                     self.log_obj.write_to_logger(f'Transferring data for patient {current_patient_id} is ended {index}')
 
             except Exception as e:
-                self.log_obj.error_to_logger(f'Warning: Process of transferring has been failed for {current_patient_id} patient.\nError: {e}')            
-
-
+                self.log_obj.error_to_logger(f'Warning: Process of transferring has been failed for {current_patient_id} patient.\nError: {e}')
+                pass
 
 
 if __name__ == "__main__":

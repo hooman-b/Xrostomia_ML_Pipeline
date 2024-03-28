@@ -53,6 +53,7 @@ class Navigator():
 
     def _extract_image_information(self, subfolders):
         """
+        Type: instance method
         Inputs: 1. subfolders (list): List of subfolders to extract information from.
         Explanation: Extracts information from images in subfolders.
         Outputs: 1. group (list): List containing extracted information from images.
@@ -82,6 +83,7 @@ class Navigator():
 
     def navigate_folder(self, path_folder):
         """
+        Type: instance method
         Inputs: 1. path_folder (str): Path of the folder to navigate through.
         Explanation: Navigates through the specified folder.
         Outputs: 1. group (list): List containing extracted information from images.
@@ -104,6 +106,7 @@ class Navigator():
 
     def make_image_feature_dfs(self):
         """
+        Type: instance method
         Explanation: Makes dataframe based on available images.
         """
         self.log_obj.write_to_logger(f'{len(self.navigation_paths)} Navigation paths where found')    

@@ -68,6 +68,7 @@ class WeeklyctDataframeMaker():
 
     def make_a_week_df(self, main_df, weeklyct_df, week_name):
         """
+        Type: instance method
         Inputs: 1. main_df (DataFrame): Main DataFrame.
                 2. weeklyct_df (DataFrame): DataFrame containing weekly CT data.
                 3. week_name (str): Name of the week.
@@ -92,6 +93,7 @@ class WeeklyctDataframeMaker():
 
     def make_weeklyct_df(self, general_df):
         """
+        Type: instance method
         Inputs: 1. general_df (DataFrame): General DataFrame.
         Explanation: Finds weeklyCTs and drops other types of CTs.
         Outputs: 1. corrected_weeklyct_df (DataFrame): DataFrame containing corrected
@@ -119,6 +121,7 @@ class WeeklyctDataframeMaker():
 
     def save_weeklyct_df(self):
         """
+        Type: instance method
         Explanation: Saves the weekly CT DataFrame. This method is used directly into the main pipeline.
         """        
         # Find the name of the general files
@@ -144,6 +147,7 @@ class WeeklyctDataframeMaker():
 
     def make_final_weeklyct_df(self):
         """
+        Type: instance method
         Explanation: This function makes the final weeklyCT dataframe
         """
         try:
