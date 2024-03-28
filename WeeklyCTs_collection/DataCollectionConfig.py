@@ -39,6 +39,8 @@ weeklyct_file_name = 'WeeklyCT_dataframe'
 make_label_df = True # If you want weeklyCT df based on each folder change this True
 label_list = ['xer_06', 'xer_12'] # If the above is false, this program does not count this one
 weeklyct_final_df_name = 'final'
+desired_file = 'weeklyct'
+common_col = 'ID'
 
 # Clinical df
 clinical_df_name = 'Xerostomia_dataset.xlsx' # CONFIG File

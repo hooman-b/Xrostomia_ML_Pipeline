@@ -97,7 +97,7 @@ class Navigator():
                 group.extend(self._extract_image_information(subfolders))
         
         except FileNotFoundError as e:
-            self.log_obj.write_to_logger(f'Error while navigating folders in path {path_folder}: {e}')
+            self.log_obj.error_to_logger(f'Error while navigating folders in path {path_folder}: {e}')
 
         return group
 
@@ -125,7 +125,7 @@ class Navigator():
                 self.log_obj.write_to_logger(f'The dataframe has been saved successfully.')
 
             except Exception as e:
-                self.log_obj.write_to_logger(f'Warning: path {path_folder} shows the following error: {e}')
+                self.log_obj.error_to_logger(f'Warning: path {path_folder} shows the following error: {e}')
                 pass
 
 

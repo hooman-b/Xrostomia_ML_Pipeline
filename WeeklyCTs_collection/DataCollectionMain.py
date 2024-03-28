@@ -27,7 +27,7 @@ class Main():
         log_obj = Log('Data_collection.log')
         writer_obj = Writer(dcc.writer_type)
         df_processor_obj = DataframeProcessor()
-        wfe_obj = WeeklyctFeatureExtractor() # Use abbreviation
+        wfe_obj = WeeklyctFeatureExtractor()
 
         # Navigator phase
         if dcc.navigator_switch:  
@@ -36,7 +36,7 @@ class Main():
 
         # Weeklyct Dataframe creation phase        
         if dcc.weeklyct_df:
-            wdm_obj = WeeklyctDataframeMaker(wfe_obj, df_processor_obj, reader_obj, writer_obj) # Use abbreviation
+            wdm_obj = WeeklyctDataframeMaker(wfe_obj, df_processor_obj, reader_obj, writer_obj, log_obj)
             wdm_obj.save_weeklyct_df()
 
         # Final Weeklyct Dataframe creation phase
