@@ -45,7 +45,7 @@ class Main():
 
         # Making transferring df phase     
         if dcc.transferring_df:
-            transferring_obj =  TransferringWeeklycts(wdm_obj, df_processor_obj, reader_obj, writer_obj)
+            transferring_obj =  TransferringWeeklycts(wdm_obj, df_processor_obj, reader_obj, writer_obj, log_obj)
             transferring_obj.make_transferring_df()
 
         # Transferring phase

@@ -97,7 +97,7 @@ class WeeklyctDataframeMaker():
         weekly_cts_group = list()
 
         # Separate each ID dataframe
-        id_df = pd.DataFrame(general_df.groupby(['ID']))
+        id_df = pd.DataFrame(general_df.groupby([self.common_col]))
 
         # Iterate through each ID and extract weekly CT features
         for counter, id_num in enumerate(id_df[0]):
@@ -115,17 +115,27 @@ class WeeklyctDataframeMaker():
 
     def save_weeklyct_df(self):
         """
-        Explanation: Saves the weekly CT DataFrame.
+        Explanation: Saves the weekly CT DataFrame. This method is used directly into the main pipeline.
         """        
         # Find the name of the general files
+        self.log_obj.write_to_logger(f'Looking for preliminary datframe names has been started')  
         general_dfs_names = self.reader_obj.raed_dataframe_names(self.general_df_path, 'general')
+        self.log_obj.write_to_logger(f'Following dataframes have been found: {general_dfs_names}')
 
         # Loop through the names make weeklyCT df based on that and save it.
         for df_name in general_dfs_names:
-            general_df = self.reader_obj.read_dataframe(self.general_df_path, df_name)
-            weeklyct_df = self.make_weeklyct_df(general_df)
-            self.writer_obj.write_dataframe(df_name, self.weeklyct_file_name, weeklyct_df, 
-                                            self.weeklyct_df_path, dcc.navigation_file_name)
+
+            try:
+                # Read, make, and save a weeklyCT dataframe based on the general df.
+                general_df = self.reader_obj.read_dataframe(self.general_df_path, df_name)
+                weeklyct_df = self.make_weeklyct_df(general_df)
+                self.writer_obj.write_dataframe(df_name, self.weeklyct_file_name, weeklyct_df, 
+                                                self.weeklyct_df_path, dcc.navigation_file_name)
+                self.log_obj.write_to_logger(f'A dataframe for {df_name} name hass been made and saved')
+
+            except Exception as e:
+                self.log_obj.error_to_logger(f'Warning: There is NO possibility to make a dataframe for {df_name} name \nError: {e}')
+                pass   
 
 
     def make_final_weeklyct_df(self):
@@ -173,7 +183,7 @@ class WeeklyctDataframeMaker():
                                                     label_df, self.weeklyct_df_path)
                     self.log_obj.write_to_logger(f'A dataframe for {label} label hass been made and saved')
             except Exception as e:
-                self.log_obj.error_to_logger(f'Warning: Thereis NO possibility to make a dataframe for {label} label \nError: {e}')
+                self.log_obj.error_to_logger(f'Warning: There is NO possibility to make a dataframe for {label} label \nError: {e}')
                 pass                
 
 
